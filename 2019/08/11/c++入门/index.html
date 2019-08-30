@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2017.2.8 linux环境下c程序到可执行程序的步骤（以test.c为例）。对于c++程序只要将 gcc 改为 g++即可。  预处理 12gcc -E test.c -o test.i# 预处理生成test.i文件   编译为汇编代码1234gcc -S test.i -o test.s# 由预处理生成的文件生成汇编语言文件# 可以加入编译优化命令，分三个层次# -O，第一级优化，-O2第">
+<meta name="keywords" content="c++,gcc,gdb,酷壳,c,vector">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/2019/08/11/c++入门/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="2017.2.8 linux环境下c程序到可执行程序的步骤（以test.c为例）。对于c++程序只要将 gcc 改为 g++即可。  预处理 12gcc -E test.c -o test.i# 预处理生成test.i文件   编译为汇编代码1234gcc -S test.i -o test.s# 由预处理生成的文件生成汇编语言文件# 可以加入编译优化命令，分三个层次# -O，第一级优化，-O2第">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-08-11T13:28:23.865Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+<meta name="twitter:description" content="2017.2.8 linux环境下c程序到可执行程序的步骤（以test.c为例）。对于c++程序只要将 gcc 改为 g++即可。  预处理 12gcc -E test.c -o test.i# 预处理生成test.i文件   编译为汇编代码1234gcc -S test.i -o test.s# 由预处理生成的文件生成汇编语言文件# 可以加入编译优化命令，分三个层次# -O，第一级优化，-O2第">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c++入门" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/08/11/c++入门/" class="article-date">
+  <time datetime="2019-08-11T13:28:23.865Z" itemprop="datePublished">2019-08-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="2017-2-8"><a href="#2017-2-8" class="headerlink" title="2017.2.8"></a>2017.2.8</h2><ol>
+<li><p>linux环境下c程序到可执行程序的步骤（以test.c为例）。对于c++程序只要将 <em>gcc</em> 改为 <em>g++</em>即可。</p>
+<ul>
+<li><p>预处理</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -E test.c -o test.i</span><br><span class="line"><span class="comment"># 预处理生成test.i文件</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编译为汇编代码<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc -S test.i -o test.s</span><br><span class="line"><span class="comment"># 由预处理生成的文件生成汇编语言文件</span></span><br><span class="line"><span class="comment"># 可以加入编译优化命令，分三个层次</span></span><br><span class="line"><span class="comment"># -O，第一级优化，-O2第二级优化，-O3第三级优化.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>汇编生成目标文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -c test.s -o test.o</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>链接生成可执行文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc test.o -o <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>mac上安装gdb</p>
+<ul>
+<li><p>执行下面的命令：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e<span class="string">"<span class="variable">$(curl -fsSL  https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更新homebrew软件库并安装gdb。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">brew search gdb</span><br><span class="line"><span class="comment"># 检查gdb是否在homebrew的软件库中</span></span><br><span class="line">brew update</span><br><span class="line"><span class="comment"># 更新homebrew软件库</span></span><br><span class="line">brew install gdb</span><br><span class="line"><span class="comment"># 安装gdb</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改钥匙串<br>  <a href="http://www.jb51.net/os/MAC/405488.html" target="_blank" rel="noopener">修改钥匙串详细方法</a></p>
+<p>  然而gdb和现在的mac系统sierra不兼容。过程挺惊险，学到了不少linux环境下编译运行C/C++程序的方法。</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="2017-2-9"><a href="#2017-2-9" class="headerlink" title="2017.2.9"></a>2017.2.9</h2><ul>
+<li><p>使用docker环境玩gdb</p>
+<p>  第一个docker不行，可以再多弄几个docker出来</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -it --security-opt seccomp=unconfined --name ds schickling/rust</span><br></pre></td></tr></table></figure>
+
+<p>  这个命令生成的docker container应该可以运行gdb, 如果不行换个命令：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it --security-opt seccomp=unconfined --name ds schickling/rust</span><br></pre></td></tr></table></figure>
+
+<p>这个命令生成的docker container是一定可以运行gdb的。但是这些容器都比较低端，没有vim，有的连vi都没有！最好使用目录映射，让docker container和宿主机共享一个目录.这样就可以在本地用高端的编辑器来写代码，在docker中用gdb调试了！所以上述命令可以改为：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -v ~/Desktop/zmx/gdb_share:/gdb_share -it --security-opt seccomp=unconfined --name gdbs schickling/rust</span><br></pre></td></tr></table></figure>
+
+<p>但是这么一来docker container中还是没有vim，查代码还是不方便，还是要更新apt-get，然后安装vim。</p>
+</li>
+</ul>
+<h2 id="2017-2-10"><a href="#2017-2-10" class="headerlink" title="2017.2.10"></a>2017.2.10</h2><ol>
+<li><p>酷壳上面的文章也不一定是对的，C/C++一直在更新，在变得更安全，比如</p>
+<p>   <a href="http://coolshell.cn/articles/4907.html" target="_blank" rel="noopener">http://coolshell.cn/articles/4907.html</a></p>
+<p>   中的第一个例子，我在linux上得到的结果就不一样！我这边的输出结果是0，8！系统版本是debian，gcc版本是5.3.0。这个版本的gcc中，局部变量也会自动初始化了！很多东西都要自己试了才知道，这点对于C/C++尤其重要，因为自己看到的跟自己运行的结果可能大相径庭！文章中的第二个例子没分析程序的输出结果，甚至连提都没提……日了狗了！我在debian gcc4.7.2下得到的结果是：使用volatile和不使用volatile没什么区别！！！</p>
+</li>
+<li><p>无符号整数溢出用最大的该类型最大的数取模，实际就是截断！</p>
+<p> 有符号整数溢出是未定义的undefined！undefined是C/C++中最可怕的事情！undefined的行为编译器想怎么干就怎么干！甚至可以玩彩蛋！目前比较流行的C/C++编译器有gcc（g++），这是Unix系列操作系统默认的编译器；Windows的编译器一般是VC++。</p>
+</li>
+<li><p><a href="http://coolshell.cn/articles/5761.html" target="_blank" rel="noopener">http://coolshell.cn/articles/5761.html</a></p>
+<p>这篇文章中的内存对齐讲的很好，内存对齐（memory alignment）是编译器的干的活，编译器计算一个结构体struct的大小时，是边计算边对齐的，因此结构体元素的声明顺序会影响结构体的大小！原顺序不变，容量需要细细思考，注意每种类型的默认占得字节数和类型变化处！在说明数组的地址时，数组或者指针的地址 + 或 - 操作，必须考虑内部数组的大小，而且高维要变到一维！注意64-bit系统中指针占8B！</p>
+</li>
+<li><p>编译器干了什么活？每一步又具体干了什么？？？？  </p>
+<p>预处理，编译，汇编，链接。</p>
+</li>
+</ol>
+<ol start="5">
+<li><a href="http://coolshell.cn/articles/11377.html" target="_blank" rel="noopener">http://coolshell.cn/articles/11377.html</a><br>这篇文章说到的访问结构体的实质是（&amp;t + bias），t是结构体实例，即指针。bias就是元素相对于结构体的偏移量！第一个元素的bias为0！花了我好长时间终于理解了！</li>
+</ol>
+<hr>
+<h2 id="2017-2-13："><a href="#2017-2-13：" class="headerlink" title="2017.2.13："></a>2017.2.13：</h2><ol>
+<li><p><a href="http://blog.csdn.net/haoel/article/details/24058" target="_blank" rel="noopener">http://blog.csdn.net/haoel/article/details/24058</a>  </p>
+<p> 这篇文章写得太早了，是04年写的了！现在的C++比04年的改变了很多，那时候的copy_on_write已经不能复现！！我在本地跑的结果跟博客中的结果完全不同！<br> <a href="http://blog.csdn.net/haoel/article/details/1491219" target="_blank" rel="noopener">http://blog.csdn.net/haoel/article/details/1491219</a><br> 这篇文章中提到这种copy_on_write（COW）技术在多线程/进程环境下，极易出现错误，并预测在新版的C++标准中被移除，还真是被移除了！</p>
+</li>
+<li><p>意图，规格，实现！</p>
+</li>
+</ol>
+<hr>
+<h2 id="2017-2-13：-1"><a href="#2017-2-13：-1" class="headerlink" title="2017.2.13："></a>2017.2.13：</h2><ol>
+<li><p><a href="http://coolshell.cn/articles/10115.html" target="_blank" rel="noopener">http://coolshell.cn/articles/10115.html</a><br> 这篇文章中有一段代码：</p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">   <span class="keyword">char</span> a;</span><br><span class="line">   <span class="keyword">int</span> b;</span><br><span class="line">&#125; b = &#123; <span class="number">2</span>, <span class="number">4</span> &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这里面b定义了两次，为什么不报错？<br> 这里并没有定义两次，大括号分开了作用域！！所以这不是重复定义！只有链接的时候才会处理多个文件中重复定义的全局变量！所以那些所谓的抢符号和弱符号都只是相对于链接这个过程而言的！</p>
+</li>
+</ol>
+<h2 id="2017-4-14"><a href="#2017-4-14" class="headerlink" title="2017.4.14"></a>2017.4.14</h2><hr>
+<ul>
+<li><p>浮点数转换为int</p>
+<ul>
+<li><p>下行转换</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> x;</span><br><span class="line"><span class="keyword">int</span> target = <span class="keyword">int</span>(x);</span><br><span class="line"><span class="comment">// 普通的强制转换</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>几舍几入</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> x;</span><br><span class="line"><span class="keyword">int</span> target = <span class="keyword">int</span>(x + <span class="number">0.5</span>);  <span class="comment">// 四舍五入</span></span><br><span class="line"><span class="keyword">int</span> target = <span class="keyword">int</span> (x + <span class="number">0.7</span>); <span class="comment">// 二舍三入</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上行转换</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="keyword">float</span> x;</span><br><span class="line"><span class="keyword">int</span> target = <span class="built_in">ceil</span>(x);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="C-的vector常用接口总结"><a href="#C-的vector常用接口总结" class="headerlink" title="C++的vector常用接口总结"></a>C++的vector常用接口总结</h2><ul>
+<li><p>清华的一个学霸的经验帖写的很棒：</p>
+<ul>
+<li><p><a href="http://www.cnblogs.com/wei-li/archive/2012/06/08/2541576.html" target="_blank" rel="noopener">小唯-THU的vector总结</a></p>
+</li>
+<li><p><em>PS*</em>: 这个学霸的python下matplotlib使用总结写的也非常棒！ </p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="auto关键字"><a href="#auto关键字" class="headerlink" title="auto关键字"></a>auto关键字</h2><ul>
+<li><p>用auto关键字遍历vector</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &gt; res;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> vec: res) &#123;</span><br><span class="line">    vec.push_back(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这种方式不能达到修改res的目的！</span></span><br><span class="line"><span class="comment">// 因为vec是复制生成的新的临时变量！</span></span><br><span class="line"><span class="comment">// 因此用auto遍历vector只能用于读！</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h2 id="使用C的内容"><a href="#使用C的内容" class="headerlink" title="使用C的内容"></a>使用C的内容</h2><ul>
+<li><p>使用C的输入输出</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="comment">// 不是使用 #include&lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">// 前者是后者的模板化版本，也是标准的C++版本。</span></span><br><span class="line"><span class="comment">// 这样就可以使用C的输入输出函数如</span></span><br><span class="line"><span class="comment">// printf.</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用C的系统函数</p>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="comment">// 不适用#inlcude &lt;stdlib.h&gt;.</span></span><br><span class="line"><span class="comment">// 前者是后者的模板化版本。</span></span><br><span class="line"><span class="comment">// 这样就可使用system("PAUSE")l .</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h2 id="c-与java中字符串取子串函数的区别"><a href="#c-与java中字符串取子串函数的区别" class="headerlink" title="c++与java中字符串取子串函数的区别"></a>c++与java中字符串取子串函数的区别</h2><ul>
+<li>c++</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="string">"hello world"</span>)</span></span>;</span><br><span class="line"><span class="comment">// 函数原型: string.substr(start_index, len = end_index)</span></span><br><span class="line">s = str.substr(<span class="number">1</span>)  <span class="comment">// s: "ello world"</span></span><br><span class="line">s = str.substr(<span class="number">0</span>, <span class="number">5</span>)  <span class="comment">// s: "hello"</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>java</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="keyword">new</span> String(<span class="string">"hello world"</span>);</span><br><span class="line"><span class="comment">// 函数原型: String.substring(start_index, end_index)</span></span><br><span class="line">String s = str.substring(<span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line"><span class="comment">// s: "hello"</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h1 id="C-标准库"><a href="#C-标准库" class="headerlink" title="C++ 标准库"></a>C++ 标准库</h1><h2 id="头文件："><a href="#头文件：" class="headerlink" title="头文件："></a>头文件：</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="排列函数"><a href="#排列函数" class="headerlink" title="排列函数"></a>排列函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">next_permutation(beg, end)</span><br><span class="line">next_permutation(beg, end, comp)</span><br></pre></td></tr></table></figure>
+
+<p>输入两个迭代器，可以指定比较函数。<br>序列的所有排列可以规定次序。如123在132前，acb在bac前。调用这一函数时，函数调整输入序列的顺序，生成下一个排列。如果序列已经是最后一个排列中，则<code>next_permutation</code>将序列重新排列为最低排列并返回<code>false</code>；否则，它将输入序列变换为下一个排列，即字典序的下一个排列，并返回<code>true</code>。</p>
+<hr>
+<h2 id="C和C-风格的示例代码："><a href="#C和C-风格的示例代码：" class="headerlink" title="C和C++风格的示例代码："></a>C和C++风格的示例代码：</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; a[<span class="number">0</span>] &lt;&lt; a[<span class="number">1</span>] &lt;&lt; a[<span class="number">2</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">if</span> (!next_permutation(a, a + <span class="number">3</span>))&#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt; vecStr&#123;<span class="string">"abc"</span>, <span class="string">"xyz"</span>, <span class="string">"aeiou"</span>&#125;;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; vecStr[<span class="number">0</span>] &lt;&lt; vecStr[<span class="number">1</span>] &lt;&lt; vecStr[<span class="number">2</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">if</span> (!next_permutation(vecStr.begin(), vecStr.end())) &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>C风格的代码可以显著快于C++风格的代码。</p>
+<h2 id="排序函数"><a href="#排序函数" class="headerlink" title="排序函数"></a>排序函数</h2><p>只能用于顺序容器如vector，deque，list，不能用于键值对容器，这和Python中的sorted函数的限制是一致的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sort(beg, end)</span><br><span class="line"><span class="comment">//实际是快排,平均时间复杂度为N log(N)。</span></span><br><span class="line"></span><br><span class="line">sort(beg, end, comp)</span><br><span class="line"><span class="comment">// comp是函数或者函数指针，签名是 </span></span><br><span class="line"><span class="comment">//   bool comp(elem_type first_arg, elem_type second_arg)，</span></span><br><span class="line"><span class="comment">// 返回的bool值的含义是第一个参数是否应该排在第二个参数的前面。</span></span><br><span class="line"></span><br><span class="line">stable_sort (beg,  end)</span><br><span class="line"><span class="comment">//实际是归并排序,在空间足够的情况下时间复杂度为N log(N)。</span></span><br><span class="line">stable_sort(beg, end, comp)</span><br></pre></td></tr></table></figure>
+
+<h2 id="min、max"><a href="#min、max" class="headerlink" title="min、max"></a>min、max</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">min_element(beg, end)</span><br><span class="line">min_element (beg, end, comp)</span><br><span class="line">max_element (beg, end)</span><br><span class="line">max_element (beg, end, comp)</span><br><span class="line"><span class="comment">// 可输入数组指针，也可输入迭代器。</span></span><br><span class="line"><span class="comment">// 输入指针就返回指针，输入迭代器就返回迭代器。</span></span><br><span class="line"><span class="comment">// 另有类似的min和max函数，只能输入迭代器，不能输入指针。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="二分搜索函数"><a href="#二分搜索函数" class="headerlink" title="二分搜索函数"></a>二分搜索函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">lower_bound(beg, end, val)</span><br><span class="line">lower_bound(beg, end, val, comp)</span><br><span class="line"><span class="comment">// lower_bound得到大于等于val的第一个元素的迭代器</span></span><br><span class="line"></span><br><span class="line">upper_bound(beg, end, val)</span><br><span class="line">upper_bound(beg, end, val, comp)</span><br><span class="line"><span class="comment">// upper_bound得到大于val第一个元素的迭代器</span></span><br><span class="line"><span class="comment">// 输入的数据必须是有序的。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 若搜索不到，则返回最后一个元素的下一个元素的迭代器，即end()迭代器。</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">8</span> &#125;;</span><br><span class="line"><span class="keyword">auto</span> it = upper_bound(vec.begin(), vec.end(), <span class="number">4</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, it - vec.begin());</span><br><span class="line"><span class="comment">// 输出为5。</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h2><p>只有进行字符串匹配时考虑用find进行搜索，其他情况都用lower_bound和upper_bound进行搜索。</p>
+<p>有序序列集合运算<br>参见《C++ Primer》<br>一般般，不是特别好用，得到的结果可能和预期的不一样。</p>
+<hr>
+<h2 id="istringstream类"><a href="#istringstream类" class="headerlink" title="istringstream类"></a>istringstream类</h2><ul>
+<li><p>问题<br>  stringstream不主动释放内存(或许是为了提高效率)，如果在程序中用同一个流，反复读写大量的数据，将会造成大量的内存消耗，这时候，需要适时地用 </p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> 	清除一下缓冲,具体的例子见链接：[stream大坑脱坑详细指南](http://blog.csdn.net/chjp2046/article/details/5460462)</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">* 指针失效问题：</span><br><span class="line"></span><br><span class="line">   跟python的迭代器不同的是，c++的istringstream的指针在子函数修改istringstream之后，父函数的指针会失效，这时候需要调用</span><br><span class="line"></span><br><span class="line">    ```cpp</span><br><span class="line">    stream.clear();</span><br></pre></td></tr></table></figure>
+
+<p> 使指针得到正确值！</p>
+</li>
+</ul>
+<hr>
+<h2 id="数值类型转到string类型"><a href="#数值类型转到string类型" class="headerlink" title="数值类型转到string类型"></a>数值类型转到string类型</h2><p>使用 ==<code>to_string()</code>== 函数，有多种重载方式，可以基本可以覆盖所有数值类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">string to_string (int val);</span><br><span class="line">string to_string (long val);</span><br><span class="line">string to_string (long long val);</span><br><span class="line">string to_string (unsigned val);</span><br><span class="line">string to_string (unsigned long val);</span><br><span class="line">string to_string (unsigned long long val);</span><br><span class="line">string to_string (float val);</span><br><span class="line">string to_string (double val);</span><br><span class="line">string to_string (long double val);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="C风格字符串转到数值类型："><a href="#C风格字符串转到数值类型：" class="headerlink" title="C风格字符串转到数值类型："></a>C风格字符串转到数值类型：</h2><p>使用<code>atoi()</code>，<code>atof()</code>, <code>atol()</code>, 和<code>atoll()</code>等，意思是将ASCII码转换为int,float,long或者long long等类型。<br>函数原型如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int atoi (const char * str);</span><br><span class="line">double atof (const char* str);</span><br><span class="line">long int atol (const char * str );</span><br><span class="line">long long int atoll (const char * str);</span><br></pre></td></tr></table></figure>
+
+<h2 id="string类型转到数值类型"><a href="#string类型转到数值类型" class="headerlink" title="string类型转到数值类型"></a>string类型转到数值类型</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">stod</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">stof</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stoi</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">stol</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">double</span> <span class="title">stold</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="title">stoll</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">stoul</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> <span class="title">stoull</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>这套函数和<code>to_string()</code>函数体系是对应的 ！</p>
+<p>string类型可以先用<code>str.c_str()</code>将string对象转到C风格字符串再将C风格字符串转到数值类型，但是显然使用专门的将string类对象转到各种数值类型的函数更符号C++程序员的逼格！</p>
+<hr>
+<h2 id="《C-Primer》阅读笔记"><a href="#《C-Primer》阅读笔记" class="headerlink" title="《C++ Primer》阅读笔记"></a>《C++ Primer》阅读笔记</h2><h3 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h3><pre><code>C++讲究效率，内联函数指的是那些本身代码块比较小，但是运行时调用次数比较多的函数。如果不把这些函数设置为内联函数，调用的开销太大了！于是就想到把这些函数直接安插在主函数中，避免调用  以提高效率。但是现在的编译器相当智能，能自动统计函数的执行次数，会自己把相应的函数设置为内联函数。要注意的是：</code></pre><ol>
+<li>在类定义中（.h文件才有类定义）定义（不是声明）的函数默认为内联函数</li>
+<li>内联函数必须在 .h 文件中定义（不只是声明），因为编译器要知道内联函数的完整代码  才能在编译时把内敛函数的调用转化为真正的代码块</li>
+<li>内联函数的关键字（inline）对编译器而言只是一个建议，编译器是否采用还要看编译器的统计结果，即这里编译器其实有很大的发挥空间！</li>
+<li>内联的建议的发出有两种方式：一是用关键字inline声明，二是在类的声明体中直接定义函数。</li>
+<li>必须小心内联，因为内联函数的小小的改变会可能会导致大量代码的更改，这样很多依赖文件不得不重新编译，使得构建过程和编译过程不再独立（变得冗长）。</li>
+</ol>
+<h3 id="fun出的c-算法题"><a href="#fun出的c-算法题" class="headerlink" title="fun出的c++算法题"></a>fun出的c++算法题</h3><ol>
+<li><p>哈弗曼编码（基本版）  （moderate）</p>
+<ul>
+<li><p>输入：一个仅包含英文字母的文本文件</p>
+</li>
+<li><p>输出：哈弗曼编码方案，即每个字母对应的二进制哈弗曼编码（10,110 …）</p>
+</li>
+</ul>
+</li>
+<li><p>哈弗曼编码（标准版）  （hard）</p>
+<p> 包含编码器和解码器，编码器输入一个任意文件（不一定是文本文件），输出经编码压缩后的文件。</p>
+<p> 解码器输入压缩文件，输出原文件。</p>
+</li>
+<li><p>大数加法  （easy）</p>
+<p> 输入两个任意大的数，输出其和</p>
+</li>
+<li><p>大数乘法  （moderate）</p>
+</li>
+<li><p>实现Dijkstra算法  （moderate）</p>
+</li>
+<li><p>图的广度优先与深度优先搜索  （easy）</p>
+</li>
+<li><p>快速排序与归并排序  （easy）</p>
+</li>
+<li><p>词频统计  （easy）</p>
+<p> 输入一个普通英文小说，输出每个单词的出现次数。用map实现。</p>
+</li>
+<li><p>recursion （hard）</p>
+<p> 输入 n（1-10），输出以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](https://raw.githubusercontent.com/igoingdown/public-notes/master/images/recursion_problem_image.png)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h3><pre><code>函数重载的条件是没有歧义，有二义性的代码是不可以重载的</code></pre><h3 id="delete操作"><a href="#delete操作" class="headerlink" title="delete操作"></a>delete操作</h3><p>使用delete语句时要注意delete 一个对象后要立马对该对象赋值（赋为NULL）且在delete之前要判断该对象是否为空，这样可防止对自由存储区的破坏（两次使用delete语句释放同一指针可能对存储区造成破坏）故delete语句经常这样写：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(ptr)</span><br><span class="line">	<span class="keyword">delete</span> ptr;</span><br><span class="line">ptr=<span class="literal">NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="默认实参"><a href="#默认实参" class="headerlink" title="默认实参"></a>默认实参</h3><p>函数声明中（不是函数定义中！函数声明中有默认实参，函数定义中就不用写默认实参了）的形参列表里，若一个形参设置了默认实参，则它之后的所有形参都必须设置默认实参。</p>
+<h3 id="C风格字符串和string的比较"><a href="#C风格字符串和string的比较" class="headerlink" title="C风格字符串和string的比较"></a>C风格字符串和string的比较</h3><p>C风格字符串必须要以<code>&#39;\0&#39;</code><strong>（杠铃）</strong> 结尾，是<code>const char*</code>类型，不可以动态变化，而<code>string</code>类型是标准库类型和我们自己定义的类没有太大区别，可以动态变化，很方便。但是为了兼容C 的程序，一些地方必须用C风格字符串，例如文件流对象建立是绑定的文件的文件名必须是C风格字符串</p>
+<h1 id="debug模式与release模式"><a href="#debug模式与release模式" class="headerlink" title="debug模式与release模式"></a>debug模式与release模式</h1><p>Release模式下，编译器会猜测用户代码的实际意义来改写代码已生成更加高效的汇编代码，可以通过快速启动反汇编观察实际的汇编代码以验证。而debug模式下，编译器会严格按照用户的指示来生成汇编代码，也因此debug模式下运行速度要慢的多</p>
+<h3 id="书写规范"><a href="#书写规范" class="headerlink" title="书写规范"></a>书写规范</h3><ol>
+<li>注意缩进，操作符的操作数之间要留空格（各种留空格，可参考QT的示例代码）</li>
+<li>注意段划分，各段之间要空余一行</li>
+</ol>
+<h3 id="用指针固定数组基址"><a href="#用指针固定数组基址" class="headerlink" title="用指针固定数组基址"></a>用指针固定数组基址</h3><p>访问二维数组<code>array[100][100]</code>，实验发现</p>
+<p>方法1：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span> : <span class="number">100</span>)</span><br><span class="line">  ptr = 行首地址</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">1</span> : <span class="number">100</span>)</span><br><span class="line">    *(ptr++)</span><br></pre></td></tr></table></figure>
+
+<p>比方法2：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>:<span class="number">100</span>)</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">1</span>:<span class="number">100</span>)</span><br><span class="line">    <span class="built_in">array</span>[i][j]</span><br></pre></td></tr></table></figure>
+
+<p><strong>快得多</strong></p>
+<h3 id="类的关系"><a href="#类的关系" class="headerlink" title="类的关系"></a>类的关系</h3><ol>
+<li>没有关系：绝大多数时候就是这种关系，由封装的特点决定！</li>
+<li>继承：本质是“是”的关系，在继承之前先问一下这两个类之间是不是“是”的关系，继承主要是为了实现代码重用。</li>
+<li>复合（组合）：即包含或者知道的关系，包含即一个类的对象作为另一个类的成员变量，这种情况很常见！但是也有一些情况下，如狗主人和狗的关系，狗主人和狗类是相互包含的，这种互相包含的情况可用指针来实现，这就是知道的关系。</li>
+</ol>
+<h3 id="继承与派生"><a href="#继承与派生" class="headerlink" title="继承与派生"></a>继承与派生</h3><ol>
+<li>子类继承基类时，为子类分配的内存空间中完整地包括了基类的所有成员变量的所占空间和子类自己独有的成员变量的所占空间，这是因为构造子类对象时必须先构造出基类对象，然后再添加内容，但是基类的private成员不可访问（上锁）！</li>
+<li>子类对象构造过程中，基类、子类的类成员和子类的构造函数依次执行，且先构造后析构。</li>
+<li>C++的默认继承方式是私有继承！</li>
+<li>C++的public继承就是“is-a”的关系，就是说基类的所有接口在子类中都应该有效！如果发生非virtual函数发生在基类和子类中发生重名，必须使用using base class::function()导入！这就是C++的public继承的含义。</li>
+<li>C++的private继承是由……实现（is-implemented-in-terms-of）的含义，或者说“has-a”的意思。</li>
+</ol>
+<h3 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h3><ol>
+<li>虚函数的声明中的virtual关键字放在最前面，在定义中不加virtual关键字。</li>
+<li>构造函数和静态成员函数不能用virtual关键字。</li>
+<li>多态对间接派生关系依然适用。</li>
+<li>纯虚函数就是连函数体都没有的函数，故将函数赋值为0（函数指针!!!）。</li>
+<li>用基类的指针数组存放指向派生类对象的指针，遍历该数组就可以通过多态自动实现对派生类对象的访问，这在实际编程中很常用！</li>
+<li>在非构造函数和非析构函数中调用虚函数也是多态！</li>
+<li>派生类中和基类的  虚函数同函数名同参数表的函数即使不加virtual关键字也自动被转化成虚函数。</li>
+<li>虚函数表是编译器自己加的，用于“动态联编”，即多态的一种实现方式。因此这些类的成员变量中会多出一个指向该虚函数表的指针（占四个字节）。虽然这样很方便但是增加了时间和空间上的开销。</li>
+<li>如果一个类中有虚函数，则一定要把析构函数设置为虚函数！</li>
+<li>C++的虚函数的访问靠虚函数表实现：每个对象在其内存空间的最开始的位置保存一个指向虚函数表起始地址的指针（这样可以保证访问虚函数有最好的性能），这个指针就是虚指针（虚函数指针），虚函数表中的虚函数（的起始地址）连续存放，最后有结束标志符。</li>
+<li>Interface class或者reference class需要将其接口全部设为虚函数或者纯虚函数，以实现接口和实现的分离。</li>
+<li>虚函数示例代码<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C1</span>&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">int</span> a;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">f1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"c1"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f2"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f2</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f2 const"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 两个f2构成重载是因为隐藏的this指针不同补全之后分别为</span></span><br><span class="line">	<span class="comment">// void f2(C1 *const this)</span></span><br><span class="line">	<span class="comment">// void f2(const C1 *const this)</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f10</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>* a)</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f10"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f10</span><span class="params">(<span class="keyword">int</span> *a)</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f10 no const"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f5</span><span class="params">(<span class="keyword">int</span> &amp;a)</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f5"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f5</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp;a)</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f5 const"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 同f2,f10和f5也属于正确的重载</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>:</span> <span class="keyword">public</span> C1 &#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"f3"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	C1 c;</span><br><span class="line">	<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">sizeof</span>(a) &lt;&lt; <span class="built_in">endl</span>;   <span class="comment">// 4</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="keyword">sizeof</span>(c) &lt;&lt; <span class="built_in">endl</span>;   <span class="comment">// 16, 内存以8B对齐，有虚函数表指针vptr(指向vtbl)，</span></span><br><span class="line">	<span class="comment">//  vtbl是类的，不是对象的，因为vptr是类的，不是对象的!</span></span><br><span class="line">	<span class="comment">// 通过对象实例的地址得到虚函数表，是因为 vptr 指针位于对象实例的最前面</span></span><br><span class="line">	<span class="comment">//     这是由编译器决定的，主要是为了保证取到虚函数表有最高的性能——如果有多层继承或是多重继承的情况下</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="vector使用下标访问注意"><a href="#vector使用下标访问注意" class="headerlink" title="vector使用下标访问注意"></a>vector使用下标访问注意</h3><p>在使用vector的下标访问vector的元素时，必须先使用size()函数确定一下size的值，以确保使用下标访问vector时不会发生越界。也可以使用at代替传统下标访问，因为at会自动检查数组是否越界！</p>
+<hr>
+<h2 id="char型数据判断类型"><a href="#char型数据判断类型" class="headerlink" title="char型数据判断类型"></a>char型数据判断类型</h2><h3 id="判断ASCII字符是否为十进制数字"><a href="#判断ASCII字符是否为十进制数字" class="headerlink" title="判断ASCII字符是否为十进制数字"></a>判断ASCII字符是否为十进制数字</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">isdigit</span>(<span class="keyword">int</span> c)</span><br></pre></td></tr></table></figure>
+
+<h3 id="判断ASCII字符是否为字母"><a href="#判断ASCII字符是否为字母" class="headerlink" title="判断ASCII字符是否为字母"></a>判断ASCII字符是否为字母</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">isalpah(<span class="keyword">int</span> c)</span><br></pre></td></tr></table></figure>
+
+<h3 id="判读ASCII是否为字符或十进制数"><a href="#判读ASCII是否为字符或十进制数" class="headerlink" title="判读ASCII是否为字符或十进制数"></a>判读ASCII是否为字符或十进制数</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">isalnum</span>(<span class="keyword">int</span> c)</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/08/11/c++入门/" data-id="cjz707toq0009h8r8yb76ux0b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/">vector</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/酷壳/">酷壳</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/08/11/c++_primer_note/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title"></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/basic/">basic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-primer/">c++ primer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/酷壳/">酷壳</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/basic/" style="font-size: 10px;">basic</a> <a href="/tags/c/" style="font-size: 10px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/c-primer/" style="font-size: 10px;">c++ primer</a> <a href="/tags/gcc/" style="font-size: 10px;">gcc</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/note/" style="font-size: 10px;">note</a> <a href="/tags/vector/" style="font-size: 10px;">vector</a> <a href="/tags/酷壳/" style="font-size: 10px;">酷壳</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/08/11/c++入门/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2019/08/11/c++_primer_note/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2019/08/11/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

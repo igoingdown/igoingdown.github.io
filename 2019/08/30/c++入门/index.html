@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="c++,gdb,c,gcc,vector,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解">
+<meta name="keywords" content="c++,gdb,c,gcc,vector">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++入门">
+<meta property="og:url" content="http://yoursite.com/2019/08/30/c++入门/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-08-30T04:27:19.758Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c++入门">
+<meta name="twitter:description" content="读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/30/c++入门/">
+
+
+
+
+
+  <title>c++入门 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/30/c++入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">c++入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-30T12:27:19+08:00">
+                2019-08-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。<br>为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白<br>自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，<br>以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。<br>反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解法之后，<br>才明白C++程序应该怎么写，怎么写更漂亮，怎么写能避开C++的坑。<br>还是顺利过了研究生入学的机试，也顺利找到了第一份实习。<br>这是第一篇，主要说一下在刷题过程中常用的一些技巧。</p>
+<a id="more"></a>
+
+<hr>
+<h4 id="使用浮点数要注意的坑"><a href="#使用浮点数要注意的坑" class="headerlink" title="使用浮点数要注意的坑"></a>使用浮点数要注意的坑</h4><ul>
+<li><p>浮点数转换为int</p>
+<ul>
+<li><p>下行转换</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> x;</span><br><span class="line"><span class="keyword">int</span> target = <span class="keyword">int</span>(x);</span><br><span class="line"><span class="comment">// 普通的强制转换</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>几舍几入</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> x;</span><br><span class="line"><span class="keyword">int</span> target = <span class="keyword">int</span>(x + <span class="number">0.5</span>);  <span class="comment">// 四舍五入</span></span><br><span class="line"><span class="keyword">int</span> target = <span class="keyword">int</span> (x + <span class="number">0.7</span>); <span class="comment">// 二舍三入</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上行转换</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="keyword">float</span> x;</span><br><span class="line"><span class="keyword">int</span> target = <span class="built_in">ceil</span>(x);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>浮点数由于精度比较低，不能直接用<code>==</code>进行相等判别，<br>而是要以一个非常小的数作为边界来比较</p>
+</li>
+</ul>
+<hr>
+<h4 id="vector与数组"><a href="#vector与数组" class="headerlink" title="vector与数组"></a>vector与数组</h4><ul>
+<li><p>关于<code>vector</code>，清华学霸的经验帖写的很棒：</p>
+<ul>
+<li><p><a href="http://www.cnblogs.com/wei-li/archive/2012/06/08/2541576.html" target="_blank" rel="noopener">小唯-THU的vector总结</a></p>
+</li>
+<li><p><em>PS*</em>: 这个学霸的python下matplotlib使用总结写的也非常棒！ </p>
+</li>
+</ul>
+</li>
+<li><p>数组：</p>
+<ul>
+<li>虽然vector确实好用，为了美化代码、简化逻辑，有时候还是会用到数组，如DP相关的算法题。<br>数组经常和<code>memset</code>方法一起用<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">10000</span>];</span><br><span class="line"><span class="built_in">memset</span>(a, <span class="number">0</span>, <span class="keyword">sizeof</span>(a));</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="auto关键字"><a href="#auto关键字" class="headerlink" title="auto关键字"></a>auto关键字</h4><ul>
+<li><p>auto关键字可以让编译器做类型推导，还可以通过加<code>&amp;</code>实现引用类型推导，<br>写过较为复杂的迭代器的朋友一定记得被迭代器类型名称支配的恐惧！好在auto关键字拯救了我们！</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">   <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &gt; res;</span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">auto</span> vec: res) &#123;</span><br><span class="line">       vec.push_back(<span class="number">1</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 这种方式不能达到修改res的目的！</span></span><br><span class="line">   <span class="comment">// 因为vec是复制生成的新的临时变量！</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> &amp;vec: res) &#123;</span><br><span class="line">	vec.push_back(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line">   <span class="comment">// 这种方式可以修改res，`auto`关键字的作用是编译器做类型推导，</span></span><br><span class="line"><span class="comment">// 常用于迭代器遍历数组。上面的例子也能体现auto关键字的强大</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> iter = res.begin(); iter != res.end(); iter++) &#123;</span><br><span class="line">	iter-&gt;push_back(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h4 id="使用C的内容"><a href="#使用C的内容" class="headerlink" title="使用C的内容"></a>使用C的内容</h4><ul>
+<li>使用C标准库  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">   <span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line">   <span class="comment">// 不使用 #include&lt;stdio.h&gt;</span></span><br><span class="line">   <span class="comment">// 前者是后者的模板化版本，也是标准的C++版本。</span></span><br><span class="line"><span class="comment">// 其他C标准库的命名规则同。</span></span><br><span class="line">   <span class="comment">// 这样就可以使用C的输入输出函数如</span></span><br><span class="line">   <span class="comment">// printf.</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="comment">// 不使用#inlcude &lt;stdlib.h&gt;.</span></span><br><span class="line">   <span class="comment">// 这样就可使用system("PAUSE") .</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h4 id="c-与java中字符串取子串函数的区别"><a href="#c-与java中字符串取子串函数的区别" class="headerlink" title="c++与java中字符串取子串函数的区别"></a>c++与java中字符串取子串函数的区别</h4><ul>
+<li><p>c++</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="string">"hello world"</span>)</span></span>;</span><br><span class="line"><span class="comment">// 函数原型: string.substr(start_index, len = end_index)</span></span><br><span class="line">s = str.substr(<span class="number">1</span>)  <span class="comment">// s: "ello world"</span></span><br><span class="line">s = str.substr(<span class="number">0</span>, <span class="number">5</span>)  <span class="comment">// s: "hello"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>java</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="keyword">new</span> String(<span class="string">"hello world"</span>);</span><br><span class="line"><span class="comment">// 函数原型: String.substring(start_index, end_index)</span></span><br><span class="line">String s = str.substring(<span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line"><span class="comment">// s: "hello"</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h4 id="C-标准算法库"><a href="#C-标准算法库" class="headerlink" title="C++ 标准算法库"></a>C++ 标准算法库</h4><ul>
+<li><p>头文件</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>排列函数</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">next_permutation(beg, end)</span><br><span class="line">next_permutation(beg, end, comp)</span><br></pre></td></tr></table></figure>
+
+<p>  输入两个迭代器，可以指定比较函数。<br>序列的所有排列可以规定次序。如123在132前，acb在bac前。<br>调用这一函数时，函数调整输入序列的顺序，生成下一个排列。<br>如果序列已经是最后一个排列中，则<code>next_permutation</code><br>将序列重新排列为最低排列并返回<code>false</code>；否则，<br>它将输入序列变换为下一个排列，即字典序的下一个排列，并返回<code>true</code>。</p>
+</li>
+</ul>
+<ul>
+<li><p>排序函数</p>
+<p>  只能用于顺序容器如vector，deque，list，不能用于键值对容器，<br>这和Python中的<code>sorted</code>函数的限制是一致的。</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sort(beg, end)</span><br><span class="line"><span class="comment">//实际是快排,平均时间复杂度为N log(N)。</span></span><br><span class="line"></span><br><span class="line">sort(beg, end, comp)</span><br><span class="line"><span class="comment">// comp是函数或者函数指针，签名是 </span></span><br><span class="line"><span class="comment">//   bool comp(elem_type first_arg, elem_type second_arg)，</span></span><br><span class="line"><span class="comment">// 返回的bool值的含义是第一个参数是否应该排在第二个参数的前面。</span></span><br><span class="line"><span class="comment">// 标准库中有一些函数类的模板，如`greater`和`less`，实际上默认</span></span><br><span class="line"><span class="comment">// 的comp就是`less`，使用`less`时只需要被排序的迭代器指向的元素</span></span><br><span class="line"><span class="comment">// 支持`&lt;`操作即可。</span></span><br><span class="line"></span><br><span class="line">stable_sort (beg,  end)</span><br><span class="line"><span class="comment">//实际是归并排序,在空间足够的情况下时间复杂度为N log(N)。</span></span><br><span class="line">stable_sort(beg, end, comp)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>min、max</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">min_element(beg, end)</span><br><span class="line">min_element (beg, end, comp)</span><br><span class="line">max_element (beg, end)</span><br><span class="line">max_element (beg, end, comp)</span><br><span class="line"><span class="comment">// 可输入数组指针，也可输入迭代器。</span></span><br><span class="line"><span class="comment">// 输入指针就返回指针，输入迭代器就返回迭代器。</span></span><br><span class="line"><span class="comment">// 另有类似的min和max函数，只能输入迭代器，不能输入指针。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>二分搜索函数</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">lower_bound(beg, end, val)</span><br><span class="line">lower_bound(beg, end, val, comp)</span><br><span class="line"><span class="comment">// lower_bound得到大于等于val的第一个元素的迭代器</span></span><br><span class="line"></span><br><span class="line">upper_bound(beg, end, val)</span><br><span class="line">upper_bound(beg, end, val, comp)</span><br><span class="line"><span class="comment">// upper_bound得到大于val第一个元素的迭代器</span></span><br><span class="line"><span class="comment">// 输入的数据必须是有序的。</span></span><br><span class="line"><span class="comment">// 若搜索不到，则返回最后一个元素的下一个元素的迭代器，即end()迭代器。</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">8</span> &#125;;</span><br><span class="line"><span class="keyword">auto</span> it = upper_bound(vec.begin(), vec.end(), <span class="number">4</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d"</span>, it - vec.begin());</span><br><span class="line"><span class="comment">// 输出为5。</span></span><br></pre></td></tr></table></figure>
+
+<p>  只有进行字符串匹配时考虑用find进行搜索，其他情况都用<code>lower_bound</code>和<code>upper_bound</code>进行搜索。</p>
+</li>
+</ul>
+<hr>
+<h4 id="数值类型到string类型互换"><a href="#数值类型到string类型互换" class="headerlink" title="数值类型到string类型互换"></a>数值类型到string类型互换</h4><ul>
+<li><p>数值类型-&gt;string类型: 直接<code>to_string(val)</code>即可，因为多态</p>
+</li>
+<li><p>C风格字符串-&gt;数值类型：</p>
+<p>  使用<code>atoi()</code>，<code>atof()</code>, <code>atol()</code>, 和<code>atoll()</code>等，意思是将ASCII码转换为int,float,long或者long long等类型。<br>函数原型如下：</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">atoi</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> * str)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">atof</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">int</span> <span class="title">atol</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> * str )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">atoll</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> * str)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>string类型-&gt;数值类型</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">stod</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line">   <span class="function"><span class="keyword">float</span> <span class="title">stof</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stoi</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">stol</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">double</span> <span class="title">stold</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="title">stoll</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">stoul</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line">   <span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> <span class="title">stoull</span> <span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp;  str, <span class="keyword">size_t</span>* idx = <span class="number">0</span>, <span class="keyword">int</span> base = <span class="number">10</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>  这套函数和<code>to_string()</code>函数体系是对应的 ！</p>
+</li>
+</ul>
+<hr>
+<h4 id="vector使用下标访问注意"><a href="#vector使用下标访问注意" class="headerlink" title="vector使用下标访问注意"></a>vector使用下标访问注意</h4><p>在使用vector的下标访问vector的元素时，必须先调用<code>size()</code>函数确保访问vector时不会发生越界。<br>也可以使用<code>at()</code>代替传统下标访问，<code>at()</code>会自动检查数组是否越界！</p>
+<hr>
+<h4 id="char型数据判断类型"><a href="#char型数据判断类型" class="headerlink" title="char型数据判断类型"></a>char型数据判断类型</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">isdigit</span>(<span class="keyword">int</span> c)</span><br><span class="line"><span class="comment">// 判断ASCII字符是否为十进制数字</span></span><br><span class="line"></span><br><span class="line">isalpah(<span class="keyword">int</span> c)</span><br><span class="line"><span class="comment">//判断ASCII字符是否为字母</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">isalnum</span>(<span class="keyword">int</span> c)</span><br><span class="line"><span class="comment">// 判读ASCII是否为字符或十进制数</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="C和C-风格代码比较："><a href="#C和C-风格代码比较：" class="headerlink" title="C和C++风格代码比较："></a>C和C++风格代码比较：</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; a[<span class="number">0</span>] &lt;&lt; a[<span class="number">1</span>] &lt;&lt; a[<span class="number">2</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">if</span> (!next_permutation(a, a + <span class="number">3</span>))&#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt; vecStr&#123;<span class="string">"abc"</span>, <span class="string">"xyz"</span>, <span class="string">"aeiou"</span>&#125;;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; vecStr[<span class="number">0</span>] &lt;&lt; vecStr[<span class="number">1</span>] &lt;&lt; vecStr[<span class="number">2</span>] &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">if</span> (!next_permutation(vecStr.begin(), vecStr.end())) &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述展示的C风格的代码性能上显著优于于C++风格的代码。</p>
+<hr>
+<h4 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h4><p>有序序列集合运算, 参见《C++ Primer》。<br>一般般，不是特别好用，得到的结果可能和预期的不一样。</p>
+<p>debug模式与release模式:Release模式下，编译器会猜测用户代码的实际意义来改写代码已生成更加高效的汇编代码，可以通过快速启动反汇编观察实际的汇编代码以验证。而debug模式下，编译器会严格按照用户的指示来生成汇编代码，也因此debug模式下运行速度要慢的多</p>
+<hr>
+<h4 id="书写规范"><a href="#书写规范" class="headerlink" title="书写规范"></a>书写规范</h4><ol>
+<li>注意缩进，操作符的操作数之间要留空格（各种留空格，可参考QT的示例代码）</li>
+<li>注意段划分，各段之间要空余一行</li>
+</ol>
+<h4 id="用指针固定数组基址"><a href="#用指针固定数组基址" class="headerlink" title="用指针固定数组基址"></a>用指针固定数组基址</h4><p>访问二维数组<code>array[100][100]</code>，实验发现</p>
+<p>方法1：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span> : <span class="number">100</span>)</span><br><span class="line">  ptr = 行首地址</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">1</span> : <span class="number">100</span>)</span><br><span class="line">    *(ptr++)</span><br></pre></td></tr></table></figure>
+
+<p>比方法2：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>:<span class="number">100</span>)</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">1</span>:<span class="number">100</span>)</span><br><span class="line">    <span class="built_in">array</span>[i][j]</span><br></pre></td></tr></table></figure>
+
+<p><strong>快得多</strong></p>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/c/" rel="tag"># c++</a>
+          
+            <a href="/tags/gdb/" rel="tag"># gdb</a>
+          
+            <a href="/tags/c/" rel="tag"># c</a>
+          
+            <a href="/tags/gcc/" rel="tag"># gcc</a>
+          
+            <a href="/tags/vector/" rel="tag"># vector</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/14/有趣的算法题/" rel="next" title="c++入门者的几个有趣的算法题">
+                <i class="fa fa-chevron-left"></i> c++入门者的几个有趣的算法题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.gif" alt="John Doe">
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用浮点数要注意的坑"><span class="nav-number">1.</span> <span class="nav-text">使用浮点数要注意的坑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector与数组"><span class="nav-number">2.</span> <span class="nav-text">vector与数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#auto关键字"><span class="nav-number">3.</span> <span class="nav-text">auto关键字</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用C的内容"><span class="nav-number">4.</span> <span class="nav-text">使用C的内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c-与java中字符串取子串函数的区别"><span class="nav-number">5.</span> <span class="nav-text">c++与java中字符串取子串函数的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-标准算法库"><span class="nav-number">6.</span> <span class="nav-text">C++ 标准算法库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数值类型到string类型互换"><span class="nav-number">7.</span> <span class="nav-text">数值类型到string类型互换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector使用下标访问注意"><span class="nav-number">8.</span> <span class="nav-text">vector使用下标访问注意</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#char型数据判断类型"><span class="nav-number">9.</span> <span class="nav-text">char型数据判断类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C和C-风格代码比较："><span class="nav-number">10.</span> <span class="nav-text">C和C++风格代码比较：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#杂项"><span class="nav-number">11.</span> <span class="nav-text">杂项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#书写规范"><span class="nav-number">12.</span> <span class="nav-text">书写规范</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用指针固定数组基址"><span class="nav-number">13.</span> <span class="nav-text">用指针固定数组基址</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2013 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
