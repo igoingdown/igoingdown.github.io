@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>coolshell文章阅读 | igoingdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="看coolshell的时候我已经完成了从入门者到爱好者的转变，很多东西都知道，但是这些东西有什么坑，有没有一些稀奇古怪的玩法，我是不知道的，看coolshell实实在在地增长了自己的眼界。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="coolshell文章阅读">
+<meta property="og:url" content="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/index.html">
+<meta property="og:site_name" content="igoingdown">
+<meta property="og:description" content="看coolshell的时候我已经完成了从入门者到爱好者的转变，很多东西都知道，但是这些东西有什么坑，有没有一些稀奇古怪的玩法，我是不知道的，看coolshell实实在在地增长了自己的眼界。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-24T10:39:11.951Z">
+<meta property="article:modified_time" content="2026-06-24T10:39:11.951Z">
+<meta property="article:author" content="igoingdown">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="酷壳">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="igoingdown" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">igoingdown</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://igoingdown.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-酷壳文章阅读" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      coolshell文章阅读
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>看coolshell的时候我已经完成了从入门者到爱好者的转变，很多东西都知道，<br>但是这些东西有什么坑，有没有一些稀奇古怪的玩法，我是不知道的，<br>看coolshell实实在在地增长了自己的眼界。</p>
+<span id="more"></span>
+
+
+<ol>
+<li>酷壳上面的文章也不一定是对的，C&#x2F;C++一直在更新，在变得更安全，比如<br>   <a href="http://coolshell.cn/articles/4907.html">http://coolshell.cn/articles/4907.html</a><br>   中的第一个例子，我在linux上得到的结果就不一样！我这边的输出结果是0，8！系统版本是debian，gcc版本是5.3.0。这个版本的gcc中，局部变量也会自动初始化了！很多东西都要自己试了才知道，这点对于C&#x2F;C++尤其重要，因为自己看到的跟自己运行的结果可能大相径庭！文章中的第二个例子没分析程序的输出结果，甚至连提都没提……日了狗了！我在debian gcc4.7.2下得到的结果是：使用volatile和不使用volatile没什么区别！！！</li>
+<li>无符号整数溢出用最大的该类型最大的数取模，实际就是截断！<br> 有符号整数溢出是未定义的undefined！undefined是C&#x2F;C++中最可怕的事情！undefined的行为编译器想怎么干就怎么干！甚至可以玩彩蛋！目前比较流行的C&#x2F;C++编译器有gcc（g++），这是Unix系列操作系统默认的编译器；Windows的编译器一般是VC++。</li>
+<li><a href="http://coolshell.cn/articles/5761.html">http://coolshell.cn/articles/5761.html</a><br>这篇文章中的内存对齐讲的很好，内存对齐（memory alignment）是编译器的干的活，编译器计算一个结构体struct的大小时，是边计算边对齐的，因此结构体元素的声明顺序会影响结构体的大小！原顺序不变，容量需要细细思考，注意每种类型的默认占得字节数和类型变化处！在说明数组的地址时，数组或者指针的地址 + 或 - 操作，必须考虑内部数组的大小，而且高维要变到一维！注意64-bit系统中指针占8B！</li>
+<li><a href="http://coolshell.cn/articles/11377.html">http://coolshell.cn/articles/11377.html</a><br>这篇文章说到的访问结构体的实质是（&amp;t + bias），t是结构体实例，即指针。bias就是元素相对于结构体的偏移量！第一个元素的bias为0！花了我好长时间终于理解了！</li>
+<li><a href="http://blog.csdn.net/haoel/article/details/24058">http://blog.csdn.net/haoel/article/details/24058</a><br> 这篇文章写得太早了，是04年写的了！现在的C++比04年的改变了很多，那时候的copy_on_write已经不能复现！！我在本地跑的结果跟博客中的结果完全不同！<br> <a href="http://blog.csdn.net/haoel/article/details/1491219">http://blog.csdn.net/haoel/article/details/1491219</a><br> 这篇文章中提到这种copy_on_write（COW）技术在多线程&#x2F;进程环境下，极易出现错误，并预测在新版的C++标准中被移除，还真是被移除了！</li>
+<li><a href="http://coolshell.cn/articles/10115.html">http://coolshell.cn/articles/10115.html</a><br> 这篇文章中有一段代码： <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> &#123;</span><br><span class="line">   <span class="type">char</span> a;</span><br><span class="line">   <span class="type">int</span> b;</span><br><span class="line">&#125; b = &#123; <span class="number">2</span>, <span class="number">4</span> &#125;;</span><br></pre></td></tr></table></figure>
+ 这里面b定义了两次，为什么不报错？<br> 这里并没有定义两次，大括号分开了作用域！！所以这不是重复定义！只有链接的时候才会处理多个文件中重复定义的全局变量！所以那些所谓的抢符号和弱符号都只是相对于链接这个过程而言的！</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmqyylqzd0008kfh6dzfl3s2c" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++ primer细读
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/">Xray Reality 突然连不上？一次 connection reset by peer 的完整排查</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/">c++入门者的几个有趣的算法题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2026 igoingdown<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

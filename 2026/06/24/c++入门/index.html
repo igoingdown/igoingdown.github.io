@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>c++入门 | igoingdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++入门">
+<meta property="og:url" content="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="igoingdown">
+<meta property="og:description" content="读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-24T10:39:11.951Z">
+<meta property="article:modified_time" content="2026-06-24T10:39:11.951Z">
+<meta property="article:author" content="igoingdown">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="gcc">
+<meta property="article:tag" content="gdb">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="vector">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="igoingdown" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">igoingdown</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://igoingdown.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-c++入门" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++入门
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。<br>为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白<br>自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，<br>以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。<br>反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解法之后，<br>才明白C++程序应该怎么写，怎么写更漂亮，怎么写能避开C++的坑。<br>还是顺利过了研究生入学的机试，也顺利找到了第一份实习。<br>这是第一篇，主要说一下在刷题过程中常用的一些技巧。</p>
+<span id="more"></span>
+
+<hr>
+<h4 id="使用浮点数要注意的坑"><a href="#使用浮点数要注意的坑" class="headerlink" title="使用浮点数要注意的坑"></a>使用浮点数要注意的坑</h4><ul>
+<li><p>浮点数转换为int</p>
+<ul>
+<li><p>下行转换</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> x;</span><br><span class="line"><span class="type">int</span> target = <span class="built_in">int</span>(x);</span><br><span class="line"><span class="comment">// 普通的强制转换</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>几舍几入</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> x;</span><br><span class="line"><span class="type">int</span> target = <span class="built_in">int</span>(x + <span class="number">0.5</span>);  <span class="comment">// 四舍五入</span></span><br><span class="line"><span class="type">int</span> target = <span class="built_in">int</span> (x + <span class="number">0.7</span>); <span class="comment">// 二舍三入</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上行转换</p>
+   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="type">float</span> x;</span><br><span class="line"><span class="type">int</span> target = <span class="built_in">ceil</span>(x);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>浮点数由于精度比较低，不能直接用<code>==</code>进行相等判别，<br>而是要以一个非常小的数作为边界来比较</p>
+</li>
+</ul>
+<hr>
+<h4 id="vector与数组"><a href="#vector与数组" class="headerlink" title="vector与数组"></a>vector与数组</h4><ul>
+<li><p>关于<code>vector</code>，清华学霸的经验帖写的很棒：</p>
+<ul>
+<li><a href="http://www.cnblogs.com/wei-li/archive/2012/06/08/2541576.html">小唯-THU的vector总结</a></li>
+</ul>
+<p>  <strong>PS</strong>: 这个学霸的python下matplotlib使用总结写的也非常棒！ </p>
+</li>
+<li><p>数组：</p>
+<ul>
+<li>虽然vector确实好用，为了美化代码、简化逻辑，有时候还是会用到数组，如DP相关的算法题。<br>  数组经常和<code>memset</code>方法一起用  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a[<span class="number">10000</span>];</span><br><span class="line"><span class="built_in">memset</span>(a, <span class="number">0</span>, <span class="built_in">sizeof</span>(a));</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="auto关键字"><a href="#auto关键字" class="headerlink" title="auto关键字"></a>auto关键字</h4><ul>
+<li><p>auto关键字可以让编译器做类型推导，还可以通过加<code>&amp;</code>实现引用类型推导，<br>写过较为复杂的迭代器的朋友一定记得被迭代器类型名称支配的恐惧！好在auto关键字拯救了我们！</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">   vector&lt;vector&lt;<span class="type">int</span>&gt; &gt; res;</span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">auto</span> vec: res) &#123;</span><br><span class="line">       vec.<span class="built_in">push_back</span>(<span class="number">1</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 这种方式不能达到修改res的目的！</span></span><br><span class="line">   <span class="comment">// 因为vec是复制生成的新的临时变量！</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> &amp;vec: res) &#123;</span><br><span class="line">	vec.<span class="built_in">push_back</span>(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line">   <span class="comment">// 这种方式可以修改res，`auto`关键字的作用是编译器做类型推导，</span></span><br><span class="line"><span class="comment">// 常用于迭代器遍历数组。上面的例子也能体现auto关键字的强大</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> iter = res.<span class="built_in">begin</span>(); iter != res.<span class="built_in">end</span>(); iter++) &#123;</span><br><span class="line">	iter-&gt;<span class="built_in">push_back</span>(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="使用C的内容"><a href="#使用C的内容" class="headerlink" title="使用C的内容"></a>使用C的内容</h4><ul>
+<li>使用C标准库  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">   <span class="meta"># <span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line">   <span class="comment">// 不使用 #include&lt;stdio.h&gt;</span></span><br><span class="line">   <span class="comment">// 前者是后者的模板化版本，也是标准的C++版本。</span></span><br><span class="line"><span class="comment">// 其他C标准库的命名规则同。</span></span><br><span class="line">   <span class="comment">// 这样就可以使用C的输入输出函数如</span></span><br><span class="line">   <span class="comment">// printf.</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="comment">// 不使用#inlcude &lt;stdlib.h&gt;.</span></span><br><span class="line">   <span class="comment">// 这样就可使用system(&quot;PAUSE&quot;) .</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="c-与java中字符串取子串函数的区别"><a href="#c-与java中字符串取子串函数的区别" class="headerlink" title="c++与java中字符串取子串函数的区别"></a>c++与java中字符串取子串函数的区别</h4><ul>
+<li><p>c++</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function">string <span class="title">str</span><span class="params">(<span class="string">&quot;hello world&quot;</span>)</span></span>;</span><br><span class="line"><span class="comment">// 函数原型: string.substr(start_index, len = end_index)</span></span><br><span class="line">s = str.<span class="built_in">substr</span>(<span class="number">1</span>)  <span class="comment">// s: &quot;ello world&quot;</span></span><br><span class="line">s = str.<span class="built_in">substr</span>(<span class="number">0</span>, <span class="number">5</span>)  <span class="comment">// s: &quot;hello&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>java</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line"><span class="comment">// 函数原型: String.substring(start_index, end_index)</span></span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> str.substring(<span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line"><span class="comment">// s: &quot;hello&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h4 id="C-标准算法库"><a href="#C-标准算法库" class="headerlink" title="C++ 标准算法库"></a>C++ 标准算法库</h4><ul>
+<li><p>头文件</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;algorithm&gt;</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>排列函数</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">next_permutation</span>(beg, end)</span><br><span class="line"><span class="built_in">next_permutation</span>(beg, end, comp)</span><br></pre></td></tr></table></figure>
+
+<p>  输入两个迭代器，可以指定比较函数。</p>
+</li>
+</ul>
+<p>序列的所有排列可以规定次序。如123在132前，acb在bac前。<br>调用这一函数时，函数调整输入序列的顺序，生成下一个排列。<br>如果序列已经是最后一个排列中，则<code>next_permutation</code><br>将序列重新排列为最低排列并返回<code>false</code>；否则，<br>它将输入序列变换为下一个排列，即字典序的下一个排列，并返回<code>true</code>。</p>
+<ul>
+<li><p>排序函数</p>
+<p>  只能用于顺序容器如vector，deque，list，不能用于键值对容器，</p>
+</li>
+</ul>
+<p>这和Python中的<code>sorted</code>函数的限制是一致的。</p>
+<pre><code><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sort</span>(beg, end)</span><br><span class="line"><span class="comment">//实际是快排,平均时间复杂度为N log(N)。</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sort</span>(beg, end, comp)</span><br><span class="line"><span class="comment">// comp是函数或者函数指针，签名是 </span></span><br><span class="line"><span class="comment">//   bool comp(elem_type first_arg, elem_type second_arg)，</span></span><br><span class="line"><span class="comment">// 返回的bool值的含义是第一个参数是否应该排在第二个参数的前面。</span></span><br><span class="line"><span class="comment">// 标准库中有一些函数类的模板，如`greater`和`less`，实际上默认</span></span><br><span class="line"><span class="comment">// 的comp就是`less`，使用`less`时只需要被排序的迭代器指向的元素</span></span><br><span class="line"><span class="comment">// 支持`&lt;`操作即可。</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">stable_sort</span> (beg,  end)</span><br><span class="line"><span class="comment">//实际是归并排序,在空间足够的情况下时间复杂度为N log(N)。</span></span><br><span class="line"><span class="built_in">stable_sort</span>(beg, end, comp)</span><br></pre></td></tr></table></figure>
+</code></pre>
+<ul>
+<li><p>min、max</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">min_element</span>(beg, end)</span><br><span class="line"><span class="built_in">min_element</span> (beg, end, comp)</span><br><span class="line"><span class="built_in">max_element</span> (beg, end)</span><br><span class="line"><span class="built_in">max_element</span> (beg, end, comp)</span><br><span class="line"><span class="comment">// 可输入数组指针，也可输入迭代器。</span></span><br><span class="line"><span class="comment">// 输入指针就返回指针，输入迭代器就返回迭代器。</span></span><br><span class="line"><span class="comment">// 另有类似的min和max函数，只能输入迭代器，不能输入指针。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>二分搜索函数</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">lower_bound</span>(beg, end, val)</span><br><span class="line"><span class="built_in">lower_bound</span>(beg, end, val, comp)</span><br><span class="line"><span class="comment">// lower_bound得到大于等于val的第一个元素的迭代器</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">upper_bound</span>(beg, end, val)</span><br><span class="line"><span class="built_in">upper_bound</span>(beg, end, val, comp)</span><br><span class="line"><span class="comment">// upper_bound得到大于val第一个元素的迭代器</span></span><br><span class="line"><span class="comment">// 输入的数据必须是有序的。</span></span><br><span class="line"><span class="comment">// 若搜索不到，则返回最后一个元素的下一个元素的迭代器，即end()迭代器。</span></span><br><span class="line"></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; vec = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">8</span> &#125;;</span><br><span class="line"><span class="keyword">auto</span> it = <span class="built_in">upper_bound</span>(vec.<span class="built_in">begin</span>(), vec.<span class="built_in">end</span>(), <span class="number">4</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, it - vec.<span class="built_in">begin</span>());</span><br><span class="line"><span class="comment">// 输出为5。</span></span><br></pre></td></tr></table></figure>
+
+<p>  只有进行字符串匹配时考虑用find进行搜索，其他情况都用<code>lower_bound</code>和<code>upper_bound</code>进行搜索。</p>
+</li>
+</ul>
+<hr>
+<h4 id="数值类型到string类型互换"><a href="#数值类型到string类型互换" class="headerlink" title="数值类型到string类型互换"></a>数值类型到string类型互换</h4><ul>
+<li><p>数值类型-&gt;string类型: 直接<code>to_string(val)</code>即可，因为多态</p>
+</li>
+<li><p>C风格字符串-&gt;数值类型：</p>
+<p>  使用<code>atoi()</code>，<code>atof()</code>, <code>atol()</code>, 和<code>atoll()</code>等，意思是将ASCII码转换为int,float,long或者long long等类型。</p>
+</li>
+</ul>
+<p>函数原型如下：</p>
+<pre><code><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="type">int</span> <span class="title">atoi</span> <span class="params">(<span class="type">const</span> <span class="type">char</span> * str)</span></span>;</span><br><span class="line"><span class="function"><span class="type">double</span> <span class="title">atof</span> <span class="params">(<span class="type">const</span> <span class="type">char</span>* str)</span></span>;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="type">int</span> <span class="title">atol</span> <span class="params">(<span class="type">const</span> <span class="type">char</span> * str )</span></span>;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="type">long</span> <span class="type">int</span> <span class="title">atoll</span> <span class="params">(<span class="type">const</span> <span class="type">char</span> * str)</span></span>;</span><br></pre></td></tr></table></figure>
+</code></pre>
+<ul>
+<li><p>string类型-&gt;数值类型</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">double</span> <span class="title">stod</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line">   <span class="function"><span class="type">float</span> <span class="title">stof</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">stoi</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>, <span class="type">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="title">stol</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>, <span class="type">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="type">double</span> <span class="title">stold</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="type">long</span> <span class="title">stoll</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>, <span class="type">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="type">long</span> <span class="title">stoul</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>, <span class="type">int</span> base = <span class="number">10</span>)</span></span>;</span><br><span class="line">   <span class="function"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> <span class="title">stoull</span> <span class="params">(<span class="type">const</span> string&amp;  str, <span class="type">size_t</span>* idx = <span class="number">0</span>, <span class="type">int</span> base = <span class="number">10</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>  这套函数和<code>to_string()</code>函数体系是对应的 ！</p>
+</li>
+</ul>
+<hr>
+<h4 id="vector使用下标访问注意"><a href="#vector使用下标访问注意" class="headerlink" title="vector使用下标访问注意"></a>vector使用下标访问注意</h4><p>在使用vector的下标访问vector的元素时，必须先调用<code>size()</code>函数确保访问vector时不会发生越界。<br>也可以使用<code>at()</code>代替传统下标访问，<code>at()</code>会自动检查数组是否越界！</p>
+<hr>
+<h4 id="char型数据判断类型"><a href="#char型数据判断类型" class="headerlink" title="char型数据判断类型"></a>char型数据判断类型</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">isdigit</span>(<span class="type">int</span> c)</span><br><span class="line"><span class="comment">// 判断ASCII字符是否为十进制数字</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">isalpah</span>(<span class="type">int</span> c)</span><br><span class="line"><span class="comment">//判断ASCII字符是否为字母</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">isalnum</span>(<span class="type">int</span> c)</span><br><span class="line"><span class="comment">// 判读ASCII是否为字符或十进制数</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="C和C-风格代码比较："><a href="#C和C-风格代码比较：" class="headerlink" title="C和C++风格代码比较："></a>C和C++风格代码比较：</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a[] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    cout &lt;&lt; a[<span class="number">0</span>] &lt;&lt; a[<span class="number">1</span>] &lt;&lt; a[<span class="number">2</span>] &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">next_permutation</span>(a, a + <span class="number">3</span>))&#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vector&lt;string&gt; vecStr&#123;<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;xyz&quot;</span>, <span class="string">&quot;aeiou&quot;</span>&#125;;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    cout &lt;&lt; vecStr[<span class="number">0</span>] &lt;&lt; vecStr[<span class="number">1</span>] &lt;&lt; vecStr[<span class="number">2</span>] &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">next_permutation</span>(vecStr.<span class="built_in">begin</span>(), vecStr.<span class="built_in">end</span>())) &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述展示的C风格的代码性能上显著优于于C++风格的代码。</p>
+<hr>
+<h4 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h4><p>有序序列集合运算, 参见《C++ Primer》。<br>一般般，不是特别好用，得到的结果可能和预期的不一样。</p>
+<p>debug模式与release模式:Release模式下，编译器会猜测用户代码的实际意义来改写代码已生成更加高效的汇编代码，可以通过快速启动反汇编观察实际的汇编代码以验证。而debug模式下，编译器会严格按照用户的指示来生成汇编代码，也因此debug模式下运行速度要慢的多</p>
+<hr>
+<h4 id="书写规范"><a href="#书写规范" class="headerlink" title="书写规范"></a>书写规范</h4><ol>
+<li>注意缩进，操作符的操作数之间要留空格（各种留空格，可参考QT的示例代码）</li>
+<li>注意段划分，各段之间要空余一行</li>
+</ol>
+<h4 id="用指针固定数组基址"><a href="#用指针固定数组基址" class="headerlink" title="用指针固定数组基址"></a>用指针固定数组基址</h4><p>访问二维数组<code>array[100][100]</code>，实验发现</p>
+<p>方法1：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span> : <span class="number">100</span>)</span><br><span class="line">  ptr = 行首地址</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">1</span> : <span class="number">100</span>)</span><br><span class="line">    *(ptr++)</span><br></pre></td></tr></table></figure>
+<p>比方法2：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>:<span class="number">100</span>)</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">1</span>:<span class="number">100</span>)</span><br><span class="line">    array[i][j]</span><br></pre></td></tr></table></figure>
+<p><strong>快得多</strong></p>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmqyylqz20000kfh6cp1n1g7b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Xray Reality 突然连不上？一次 connection reset by peer 的完整排查
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">gdb安装与使用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/">Xray Reality 突然连不上？一次 connection reset by peer 的完整排查</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/">c++入门者的几个有趣的算法题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2026 igoingdown<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>c++ primer细读 | igoingdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++ primer细读">
+<meta property="og:url" content="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/index.html">
+<meta property="og:site_name" content="igoingdown">
+<meta property="og:description" content="读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-24T10:39:11.951Z">
+<meta property="article:modified_time" content="2026-06-24T10:39:11.951Z">
+<meta property="article:author" content="igoingdown">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="gcc">
+<meta property="article:tag" content="gdb">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="vector">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="igoingdown" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">igoingdown</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://igoingdown.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-细读c++ primer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++ primer细读
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!</p>
+<span id="more"></span>
+
+
+<h4 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h4><pre><code>C++讲究效率，内联函数指的是那些本身代码块比较小，但是运行时调用次数比较多的函数。如果不把这些函数设置为内联函数，调用的开销太大了！于是就想到把这些函数直接安插在主函数中，避免调用  以提高效率。但是现在的编译器相当智能，能自动统计函数的执行次数，会自己把相应的函数设置为内联函数。要注意的是：
+</code></pre>
+<ol>
+<li>在类定义中（.h文件才有类定义）定义（不是声明）的函数默认为内联函数</li>
+<li>内联函数必须在 .h 文件中定义（不只是声明），因为编译器要知道内联函数的完整代码  才能在编译时把内敛函数的调用转化为真正的代码块</li>
+<li>内联函数的关键字（inline）对编译器而言只是一个建议，编译器是否采用还要看编译器的统计结果，即这里编译器其实有很大的发挥空间！</li>
+<li>内联的建议的发出有两种方式：一是用关键字inline声明，二是在类的声明体中直接定义函数。</li>
+<li>必须小心内联，因为内联函数的小小的改变会可能会导致大量代码的更改，这样很多依赖文件不得不重新编译，使得构建过程和编译过程不再独立（变得冗长）。</li>
+</ol>
+<h4 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h4><pre><code>函数重载的条件是没有歧义，有二义性的代码是不可以重载的
+</code></pre>
+<h4 id="delete操作"><a href="#delete操作" class="headerlink" title="delete操作"></a>delete操作</h4><p>使用delete语句时要注意delete 一个对象后要立马对该对象赋值（赋为NULL）且在delete之前要判断该对象是否为空，这样可防止对自由存储区的破坏（两次使用delete语句释放同一指针可能对存储区造成破坏）故delete语句经常这样写：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(ptr)</span><br><span class="line">	<span class="keyword">delete</span> ptr;</span><br><span class="line">ptr=<span class="literal">NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="默认实参"><a href="#默认实参" class="headerlink" title="默认实参"></a>默认实参</h4><p>函数声明中（不是函数定义中！函数声明中有默认实参，函数定义中就不用写默认实参了）的形参列表里，若一个形参设置了默认实参，则它之后的所有形参都必须设置默认实参。</p>
+<h4 id="C风格字符串和string的比较"><a href="#C风格字符串和string的比较" class="headerlink" title="C风格字符串和string的比较"></a>C风格字符串和string的比较</h4><p>C风格字符串必须要以<code>&#39;\0&#39;</code><strong>（杠铃）</strong> 结尾，是<code>const char*</code>类型，不可以动态变化，而<code>string</code>类型是标准库类型和我们自己定义的类没有太大区别，可以动态变化，很方便。但是为了兼容C 的程序，一些地方必须用C风格字符串，例如文件流对象建立是绑定的文件的文件名必须是C风格字符串</p>
+<h4 id="类的关系"><a href="#类的关系" class="headerlink" title="类的关系"></a>类的关系</h4><ol>
+<li>没有关系：绝大多数时候就是这种关系，由封装的特点决定！</li>
+<li>继承：本质是“是”的关系，在继承之前先问一下这两个类之间是不是“是”的关系，继承主要是为了实现代码重用。</li>
+<li>复合（组合）：即包含或者知道的关系，包含即一个类的对象作为另一个类的成员变量，这种情况很常见！但是也有一些情况下，如狗主人和狗的关系，狗主人和狗类是相互包含的，这种互相包含的情况可用指针来实现，这就是知道的关系。</li>
+</ol>
+<h4 id="继承与派生"><a href="#继承与派生" class="headerlink" title="继承与派生"></a>继承与派生</h4><ol>
+<li>子类继承基类时，为子类分配的内存空间中完整地包括了基类的所有成员变量的所占空间和子类自己独有的成员变量的所占空间，这是因为构造子类对象时必须先构造出基类对象，然后再添加内容，但是基类的private成员不可访问（上锁）！</li>
+<li>子类对象构造过程中，基类、子类的类成员和子类的构造函数依次执行，且先构造后析构。</li>
+<li>C++的默认继承方式是私有继承！</li>
+<li>C++的public继承就是“is-a”的关系，就是说基类的所有接口在子类中都应该有效！如果发生非virtual函数发生在基类和子类中发生重名，必须使用using base class::function()导入！这就是C++的public继承的含义。</li>
+<li>C++的private继承是由……实现（is-implemented-in-terms-of）的含义，或者说“has-a”的意思。</li>
+</ol>
+<h4 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h4><ol>
+<li>虚函数的声明中的virtual关键字放在最前面，在定义中不加virtual关键字。</li>
+<li>构造函数和静态成员函数不能用virtual关键字。</li>
+<li>多态对间接派生关系依然适用。</li>
+<li>纯虚函数就是连函数体都没有的函数，故将函数赋值为0（函数指针!!!）。</li>
+<li>用基类的指针数组存放指向派生类对象的指针，遍历该数组就可以通过多态自动实现对派生类对象的访问，这在实际编程中很常用！</li>
+<li>在非构造函数和非析构函数中调用虚函数也是多态！</li>
+<li>派生类中和基类的  虚函数同函数名同参数表的函数即使不加virtual关键字也自动被转化成虚函数。</li>
+<li>虚函数表是编译器自己加的，用于“动态联编”，即多态的一种实现方式。因此这些类的成员变量中会多出一个指向该虚函数表的指针（占四个字节）。虽然这样很方便但是增加了时间和空间上的开销。</li>
+<li>如果一个类中有虚函数，则一定要把析构函数设置为虚函数！</li>
+<li>C++的虚函数的访问靠虚函数表实现：每个对象在其内存空间的最开始的位置保存一个指向虚函数表起始地址的指针（这样可以保证访问虚函数有最好的性能），这个指针就是虚指针（虚函数指针），虚函数表中的虚函数（的起始地址）连续存放，最后有结束标志符。</li>
+<li>Interface class或者reference class需要将其接口全部设为虚函数或者纯虚函数，以实现接口和实现的分离。</li>
+<li>虚函数示例代码</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C1</span>&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="type">int</span> a;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">f1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;c1&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f2&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f2</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f2 const&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 两个f2构成重载是因为隐藏的this指针不同补全之后分别为</span></span><br><span class="line">	<span class="comment">// void f2(C1 *const this)</span></span><br><span class="line">	<span class="comment">// void f2(const C1 *const this)</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f10</span><span class="params">(<span class="type">const</span> <span class="type">int</span>* a)</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f10&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f10</span><span class="params">(<span class="type">int</span> *a)</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f10 no const&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f5</span><span class="params">(<span class="type">int</span> &amp;a)</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f5&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f5</span><span class="params">(<span class="type">const</span> <span class="type">int</span> &amp;a)</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f5 const&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 同f2,f10和f5也属于正确的重载</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>: <span class="keyword">public</span> C1 &#123;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">f3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;f3&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	C1 c;</span><br><span class="line">	<span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">	cout &lt;&lt; <span class="built_in">sizeof</span>(a) &lt;&lt; endl;   <span class="comment">// 4</span></span><br><span class="line">	cout &lt;&lt; <span class="built_in">sizeof</span>(c) &lt;&lt; endl;   <span class="comment">// 16, 内存以8B对齐，有虚函数表指针vptr(指向vtbl)，</span></span><br><span class="line">	<span class="comment">//  vtbl是类的，不是对象的，因为vptr是类的，不是对象的!</span></span><br><span class="line">	<span class="comment">// 通过对象实例的地址得到虚函数表，是因为 vptr 指针位于对象实例的最前面</span></span><br><span class="line">	<span class="comment">//     这是由编译器决定的，主要是为了保证取到虚函数表有最高的性能——如果有多层继承或是多重继承的情况下</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmqyylqzd0007kfh630hi7dcx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          c++入门者的几个有趣的算法题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">coolshell文章阅读</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/">Xray Reality 突然连不上？一次 connection reset by peer 的完整排查</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/">c++入门者的几个有趣的算法题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2026 igoingdown<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
