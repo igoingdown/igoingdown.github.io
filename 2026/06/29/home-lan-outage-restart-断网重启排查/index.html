@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>家里突然断网？光猫 + 路由的分步重启排查手册 | igoingdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="周日晚上家里网突然断了：手机、电脑、电视盒子全都连得上 WiFi，但一个外网都打不开。第一反应是”是不是欠费了 &#x2F; 运营商挂了”，差点就打客服电话。结果什么都没动，只是按正确的顺序把光猫和几台路由断电、再按顺序开回来，网就通了。 听起来就是”重启一下”这种最没技术含量的操作，但这里面真正的关键是顺序——顺序错了，重启十遍也白搭。这篇把为什么要这么做、以及完整的操作步骤记下来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="家里突然断网？光猫 + 路由的分步重启排查手册">
+<meta property="og:url" content="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="igoingdown">
+<meta property="og:description" content="周日晚上家里网突然断了：手机、电脑、电视盒子全都连得上 WiFi，但一个外网都打不开。第一反应是”是不是欠费了 &#x2F; 运营商挂了”，差点就打客服电话。结果什么都没动，只是按正确的顺序把光猫和几台路由断电、再按顺序开回来，网就通了。 听起来就是”重启一下”这种最没技术含量的操作，但这里面真正的关键是顺序——顺序错了，重启十遍也白搭。这篇把为什么要这么做、以及完整的操作步骤记下来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-29T11:44:07.185Z">
+<meta property="article:modified_time" content="2026-06-29T11:44:07.187Z">
+<meta property="article:author" content="igoingdown">
+<meta property="article:tag" content="网络故障">
+<meta property="article:tag" content="路由器">
+<meta property="article:tag" content="光猫">
+<meta property="article:tag" content="家庭局域网">
+<meta property="article:tag" content="运维">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="igoingdown" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">igoingdown</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://igoingdown.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-home-lan-outage-restart-断网重启排查" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" class="article-date">
+  <time datetime="2026-06-29T11:44:07.185Z" itemprop="datePublished">2026-06-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      家里突然断网？光猫 + 路由的分步重启排查手册
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>周日晚上家里网突然断了：手机、电脑、电视盒子全都连得上 WiFi，但一个外网都打不开。第一反应是”是不是欠费了 &#x2F; 运营商挂了”，差点就打客服电话。结果什么都没动，只是<strong>按正确的顺序把光猫和几台路由断电、再按顺序开回来</strong>，网就通了。</p>
+<p>听起来就是”重启一下”这种最没技术含量的操作，但这里面真正的关键是<strong>顺序</strong>——顺序错了，重启十遍也白搭。这篇把为什么要这么做、以及完整的操作步骤记下来。</p>
+<span id="more"></span>
+
+<h2 id="一、先别急着拔电源：3-个前置判断"><a href="#一、先别急着拔电源：3-个前置判断" class="headerlink" title="一、先别急着拔电源：3 个前置判断"></a>一、先别急着拔电源：3 个前置判断</h2><p>整套断电重启有点”重”（全屋设备都要重连），所以动手之前先花 1 分钟确认”该不该这么修”，免得白折腾。</p>
+<ol>
+<li><p><strong>是全网故障，还是单台设备的事？</strong><br>用<strong>手机连着同一个 WiFi</strong> 打开一个网页试试。</p>
+<ul>
+<li>手机也打不开 → 是整个网络的问题，往下走。</li>
+<li>只有电脑不行、手机正常 → 别动路由，问题在你这台电脑（DNS &#x2F; 网卡 &#x2F; 代理设置），先修本机。</li>
+</ul>
+</li>
+<li><p><strong>先试最轻的：重置本机网络。</strong><br>如果只是本机可疑，先关掉 WiFi 再开 &#x2F; 重启网卡 &#x2F; <code>ipconfig /flushdns</code>（Windows）或 <code>sudo dscacheutil -flushcache</code>（Mac）。无效，再上整套重启。</p>
+</li>
+<li><p><strong>看光猫的 <code>LOS</code> 灯——这一步能直接帮你甩锅。</strong><br>如果光猫上的 <strong><code>LOS</code> 红灯在亮（或闪红）</strong>，说明是<strong>光信号丢失</strong>，属于<strong>外线 &#x2F; 光纤侧故障</strong>，不是你屋里设备能修的。这种情况别白忙活，直接打运营商报修。<br>（<code>LOS</code> 不亮、<code>PON</code> 正常，才轮到自己重启。）</p>
+</li>
+</ol>
+<blockquote>
+<p>一句话：<strong>先分清”全网 vs 单机””内部 vs 外线”，再决定要不要全屋重启。</strong></p>
+</blockquote>
+<h2 id="二、为什么”顺序”才是关键（不是玄学）"><a href="#二、为什么”顺序”才是关键（不是玄学）" class="headerlink" title="二、为什么”顺序”才是关键（不是玄学）"></a>二、为什么”顺序”才是关键（不是玄学）</h2><p>家里的网络是一条<strong>有上下游的链路</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">光纤入户 → 光猫(ONT) → 主路由 → 子路由 → 你的设备</span><br><span class="line">   ↑外线        ↑总入口      ↑核心     ↑扩展</span><br></pre></td></tr></table></figure>
+
+<p>下游设备<strong>依赖上游</strong>才能正常工作：</p>
+<ul>
+<li><strong>光猫</strong>是总入口，负责把光信号转成网络，并和运营商建立 PPPoE 拨号会话。</li>
+<li><strong>主路由</strong>要等光猫就绪，才能从上游拿到 WAN 地址、建立自己的路由表和 NAT。</li>
+<li><strong>子路由 &#x2F; AP</strong> 又要等主路由就绪，才能拿到 IP、挂到正确的网段上。</li>
+</ul>
+<p>长时间运行后，这些设备里的<strong>会话、路由表、DHCP 租约、NAT &#x2F; ARP 缓存</strong>可能错乱或溢出，于是出现”连得上 WiFi 但上不了网”——<strong>内网通、外网断</strong>，正是这种状态的典型表现。</p>
+<p>所以两条铁律：</p>
+<ul>
+<li><strong>断电</strong>要<strong>从上游往下、或整体一起断</strong>，并<strong>静置几分钟</strong>让缓存 &#x2F; 会话彻底清掉（光猫和运营商那边的会话也需要时间释放）。</li>
+<li><strong>上电</strong>必须<strong>严格从上游往下</strong>：上游没就绪就开下游，下游会拿不到地址、抓着错误状态启动，等于白重启——这就是”为什么顺序不能颠倒”。</li>
+</ul>
+<h2 id="三、断电操作（按顺序，断完静置）"><a href="#三、断电操作（按顺序，断完静置）" class="headerlink" title="三、断电操作（按顺序，断完静置）"></a>三、断电操作（按顺序，断完静置）</h2><ol>
+<li>断开<strong>光猫</strong>电源</li>
+<li>断开<strong>主路由</strong>电源</li>
+<li>断开<strong>所有子路由 &#x2F; AP</strong> 电源</li>
+<li><strong>保持全部断电，静置 3~5 分钟</strong>——这一步别省，是给设备和运营商侧清空缓存 &#x2F; 释放会话的时间</li>
+</ol>
+<h2 id="四、上电启动（顺序不能颠倒）"><a href="#四、上电启动（顺序不能颠倒）" class="headerlink" title="四、上电启动（顺序不能颠倒）"></a>四、上电启动（顺序不能颠倒）</h2><p>按<strong>上游 → 下游</strong>逐台开，<strong>每台等它稳定了再开下一台</strong>：</p>
+<ol>
+<li><strong>先开光猫</strong>，等 <strong><code>PON</code> 灯常亮</strong>、且 <code>LOS</code> 不亮，表示已和上游对接成功（约 2~3 分钟）</li>
+<li>光猫稳定后，<strong>再开主路由</strong>，等它系统加载完成、WAN &#x2F; 联网指示灯正常</li>
+<li>主路由正常后，<strong>依次开子路由 &#x2F; AP</strong></li>
+<li>所有设备指示灯都稳定后，<strong>电脑 &#x2F; 手机重连 WiFi</strong>，测试外网</li>
+</ol>
+<blockquote>
+<p>关键点：**每一级都”等上一级稳了再开”**。心急一把全开，下游照样可能抓到”半就绪”的上游状态而失败。</p>
+</blockquote>
+<h2 id="五、光猫指示灯速查"><a href="#五、光猫指示灯速查" class="headerlink" title="五、光猫指示灯速查"></a>五、光猫指示灯速查</h2><table>
+<thead>
+<tr>
+<th>灯</th>
+<th>正常</th>
+<th>异常含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>POWER</code></td>
+<td>常亮</td>
+<td>不亮 &#x3D; 没供电 &#x2F; 电源坏</td>
+</tr>
+<tr>
+<td><code>PON</code></td>
+<td><strong>常亮</strong></td>
+<td>闪烁 &#x3D; 正在和上游注册；长期不常亮 &#x3D; 没对接上</td>
+</tr>
+<tr>
+<td><code>LOS</code></td>
+<td><strong>不亮</strong></td>
+<td><strong>红灯亮 &#x2F; 闪 &#x3D; 光信号丢失，外线故障，报运营商</strong></td>
+</tr>
+<tr>
+<td><code>LAN</code> &#x2F; <code>互联网</code></td>
+<td>常亮或闪烁</td>
+<td>不亮 &#x3D; 下游没接好 &#x2F; 没拿到地址</td>
+</tr>
+</tbody></table>
+<p>记住两个组合就够用：</p>
+<ul>
+<li><code>PON</code> 常亮 + <code>LOS</code> 不亮 &#x3D; 光猫到运营商这段是好的，问题在你屋里 → 重启有救。</li>
+<li><code>LOS</code> 红 &#x3D; 外线坏了 → 自己修不了，报修。</li>
+</ul>
+<h2 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h2><p>这次”故障”最后没花一分钱、没等运营商，就靠按顺序重启解决了。能这么快定位，靠的是几个判断：</p>
+<ol>
+<li><strong>先用手机确认是全网问题</strong>，排除”只是我这台电脑”。</li>
+<li><strong>先看 <code>LOS</code> 灯</strong>分清内外，外线故障别自己瞎修。</li>
+<li><strong>断电静置</strong>给缓存 &#x2F; 会话留出清空时间，不是拔了马上插。</li>
+<li><strong>上电严格按上游 → 下游、逐台等稳</strong>——顺序错了，重启就是做无用功。</li>
+</ol>
+<p>说白了就一句话：<strong>家庭网络是一条有上下游的链路，重启要顺着链路的方向来。</strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmqz5o2u60003tnh62ae71ke7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Xray Reality 突然连不上？一次 connection reset by peer 的完整排查</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E5%85%89%E7%8C%AB/" style="font-size: 10px;">光猫</a> <a href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" style="font-size: 10px;">家庭局域网</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" style="font-size: 10px;">网络故障</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 10px;">路由器</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/">家里突然断网？光猫 + 路由的分步重启排查手册</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/">Xray Reality 突然连不上？一次 connection reset by peer 的完整排查</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2026 igoingdown<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
