@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」 | igoingdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 joonspk-research&#x2F;generative_agents 翻一遍，再对一遍 UIST’23 的原论文，就会发现流传最广的两个结论几乎都是错的：  「记忆检索是新鲜度 × 重要度 × 相关性的三重累乘，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是加权">
+<meta property="og:type" content="article">
+<meta property="og:title" content="斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」">
+<meta property="og:url" content="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/index.html">
+<meta property="og:site_name" content="igoingdown">
+<meta property="og:description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 joonspk-research&#x2F;generative_agents 翻一遍，再对一遍 UIST’23 的原论文，就会发现流传最广的两个结论几乎都是错的：  「记忆检索是新鲜度 × 重要度 × 相关性的三重累乘，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是加权">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-30T10:10:30.682Z">
+<meta property="article:modified_time" content="2026-06-30T10:10:30.682Z">
+<meta property="article:author" content="igoingdown">
+<meta property="article:tag" content="斯坦福小镇">
+<meta property="article:tag" content="Generative Agents">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="多智能体">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="源码阅读">
+<meta property="article:tag" content="记忆机制">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="igoingdown" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">igoingdown</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://igoingdown.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-斯坦福小镇源码精读-记忆检索与执行时序" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
+  <time datetime="2026-06-30T10:10:30.682Z" itemprop="datePublished">2026-06-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 <a href="https://github.com/joonspk-research/generative_agents"><code>joonspk-research/generative_agents</code></a> 翻一遍，再对一遍 UIST’23 的原论文，就会发现<strong>流传最广的两个结论几乎都是错的</strong>：</p>
+<ol>
+<li>「记忆检索是新鲜度 × 重要度 × 相关性的<strong>三重累乘</strong>，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是<strong>加权求和</strong>；</li>
+<li>「行为靠 <code>act()</code> 广播、视图靠 <code>env.update()</code> 同步」——官方源码里<strong>压根没有 <code>broadcast()</code> &#x2F; <code>env.update()</code> 这套 API</strong>。</li>
+</ol>
+<p>这篇不堆概念，直接贴官方源码逐行核对，把记忆流、检索打分、以及「Agent 之间到底怎么互相感知」三件事讲清楚。所有代码片段都来自官方仓库 <code>reverie/backend_server/</code> 目录，文末附确切文件路径。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>说明：本文以官方源码 <code>main</code> 分支为准，并与原论文 <em>Generative Agents: Interactive Simulacra of Human Behavior</em>（Park et al., UIST 2023）交叉验证。凡是和「网传版本」冲突的地方，以源码为准。</p>
+</blockquote>
+<h2 id="开篇-·-先建立整体心智模型：一个-Agent-怎么「活」一天"><a href="#开篇-·-先建立整体心智模型：一个-Agent-怎么「活」一天" class="headerlink" title="开篇 · 先建立整体心智模型：一个 Agent 怎么「活」一天"></a>开篇 · 先建立整体心智模型：一个 Agent 怎么「活」一天</h2><p>第一次接触斯坦福小镇，先别急着钻代码。用一个比喻把骨架搭好，后面所有源码都是往这个骨架上挂的。</p>
+<p><strong>它本质是个「回合制模拟游戏」</strong>——像文字版《模拟人生》：一张地图、几个小人（Agent）、一个时钟。时钟一格一格往前跳，每跳一格，每个小人轮流「想一想」该干嘛、往哪走，然后画面刷新。开跑前先记住这几件事：</p>
+<ul>
+<li><strong>两个程序 + 递纸条</strong>：后端（Python）是 Agent 的「大脑」，只思考不画画；前端（浏览器游戏）只画地图、挪小人。两者靠交换文件沟通——前端告诉后端「谁在哪」，后端回「下一步谁去哪、做什么、说什么」。</li>
+<li><strong>时间是「游戏内时钟」</strong>：每跳一步代表游戏里若干秒（示例配置 10 秒），和现实脱钩（一步在现实里可能要好几秒，因为要调大模型）。</li>
+<li><strong>每个 Agent 一步做 5 件事</strong>（认知链）：<strong>感知 → 检索 → 规划 → 反思 → 执行</strong>。白话版：看周围 → 想起相关记忆 → 决定干嘛（含要不要搭话）→ 偶尔提炼人生感悟 → 落成「下一格走哪」。</li>
+<li><strong>记忆是核心</strong>：经历被存成一条条记忆，思考时再按「相关性 + 重要性 + 新鲜度」挑几条出来用。</li>
+<li><strong>Agent 之间不发消息</strong>：而是把「我在干嘛」留在地图格子上，别人路过自己读；要对话时，由发起方一口气把整段对话生成好。</li>
+</ul>
+<p>下面就沿这条骨架逐块拆到源码级，并顺手戳破全网最流行的两个误解（检索「累乘塌陷」、行为「广播」）。<strong>每个抽象点后面都配了真实代码 + 一个手算&#x2F;场景小例子——看不懂代码不要紧，先抓例子。</strong></p>
+<h2 id="一、先把坐标系建对：真实的架构长什么样"><a href="#一、先把坐标系建对：真实的架构长什么样" class="headerlink" title="一、先把坐标系建对：真实的架构长什么样"></a>一、先把坐标系建对：真实的架构长什么样</h2><p>很多解读上来就讲「记忆流」，但没先讲清楚代码是怎么组织的，于是后面越讲越偏。先看真实结构。</p>
+<p>整个项目分两半：</p>
+<ul>
+<li>**后端 <code>reverie/backend_server/</code>**：Python，跑 Agent 的「大脑」（认知循环），不负责画面。</li>
+<li>**前端 <code>environment/frontend_server/</code>**：Django + Phaser，负责地图渲染和角色移动。</li>
+</ul>
+<p>两边<strong>不是函数调用，而是靠文件交换</strong>：后端读前端写出的 <code>environment/&#123;step&#125;.json</code>（每个 Agent 当前坐标），算完后写出 <code>movement/&#123;step&#125;.json</code>（每个 Agent 下一步去哪、动作描述、对话）。这个细节后面讲「广播」时是关键。</p>
+<p>单个 Agent 的「大脑」是 <code>Persona</code> 类，它的认知主循环是 <code>move()</code>，顺序写得明明白白（<code>persona/persona.py</code>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># persona/persona.py  —— Persona.move()，每个 step 每个 Agent 调一次</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">move</span>(<span class="params">self, maze, personas, curr_tile, curr_time</span>):</span><br><span class="line">    <span class="variable language_">self</span>.scratch.curr_tile = curr_tile</span><br><span class="line">    <span class="comment"># ...（判断是不是新的一天，决定要不要做长期规划）...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 认知主序列：感知 → 检索 → 规划 → 反思 → 执行</span></span><br><span class="line">    perceived = <span class="variable language_">self</span>.perceive(maze)</span><br><span class="line">    retrieved = <span class="variable language_">self</span>.retrieve(perceived)</span><br><span class="line">    plan      = <span class="variable language_">self</span>.plan(maze, personas, new_day, retrieved)</span><br><span class="line">    <span class="variable language_">self</span>.reflect()</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">self</span>.execute(maze, personas, plan)</span><br></pre></td></tr></table></figure>
+
+<p>记住这条链：<strong>perceive → retrieve → plan → reflect → execute</strong>。没有 <code>act()</code>，没有 <code>broadcast()</code>。</p>
+<p>Agent 的记忆也不是「三层」那么随意，而是三个<strong>各自独立的模块</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Scratch</code></td>
+<td><code>memory_structures/scratch.py</code></td>
+<td>短期&#x2F;工作记忆：当前动作、日程，以及一堆超参数</td>
+</tr>
+<tr>
+<td><code>MemoryTree</code>（空间记忆）</td>
+<td><code>memory_structures/spatial_memory.py</code></td>
+<td>一棵 <code>world→sector→arena→game_object</code> 的树，记「世界里有什么、在哪」</td>
+</tr>
+<tr>
+<td><code>AssociativeMemory</code>（记忆流）</td>
+<td><code>memory_structures/associative_memory.py</code></td>
+<td>论文里说的 Memory Stream，存所有 event &#x2F; thought &#x2F; chat</td>
+</tr>
+</tbody></table>
+<p><code>Persona.__init__</code> 里能直接看到这三者：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># persona/persona.py</span></span><br><span class="line"><span class="variable language_">self</span>.s_mem   = MemoryTree(f_s_mem_saved)        <span class="comment"># 空间记忆（树）</span></span><br><span class="line"><span class="variable language_">self</span>.a_mem   = AssociativeMemory(f_a_mem_saved) <span class="comment"># 记忆流（核心）</span></span><br><span class="line"><span class="variable language_">self</span>.scratch = Scratch(scratch_saved)           <span class="comment"># 短期工作记忆</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="二、记忆流里一条「记忆」到底有哪些字段"><a href="#二、记忆流里一条「记忆」到底有哪些字段" class="headerlink" title="二、记忆流里一条「记忆」到底有哪些字段"></a>二、记忆流里一条「记忆」到底有哪些字段</h2><p>网传版本说一条记忆就四个字段：<code>content / timestamp / importance / embedding</code>。这是过度简化了。看官方 <code>ConceptNode</code> 的真实定义：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># memory_structures/associative_memory.py</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ConceptNode</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,</span></span><br><span class="line"><span class="params">                 node_id, node_count, type_count, node_type, depth,</span></span><br><span class="line"><span class="params">                 created, expiration,</span></span><br><span class="line"><span class="params">                 s, p, o,</span></span><br><span class="line"><span class="params">                 description, embedding_key, poignancy, keywords, filling</span>):</span><br><span class="line">        <span class="variable language_">self</span>.node_id = node_id</span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">type</span>    = node_type        <span class="comment"># thought / event / chat —— 注意有三种类型</span></span><br><span class="line">        <span class="variable language_">self</span>.depth   = depth            <span class="comment"># 反思的层级：观察=0，反思越高层 depth 越大</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.created       = created</span><br><span class="line">        <span class="variable language_">self</span>.expiration    = expiration</span><br><span class="line">        <span class="variable language_">self</span>.last_accessed = <span class="variable language_">self</span>.created   <span class="comment"># 关键：检索时会被更新</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.subject   = s              <span class="comment"># 主</span></span><br><span class="line">        <span class="variable language_">self</span>.predicate = p              <span class="comment"># 谓     —— 记忆是 (S,P,O) 三元组</span></span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">object</span>    = o              <span class="comment"># 宾</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.description   = description</span><br><span class="line">        <span class="variable language_">self</span>.embedding_key = embedding_key  <span class="comment"># 注意：存的是 key，不是向量本身</span></span><br><span class="line">        <span class="variable language_">self</span>.poignancy     = poignancy      <span class="comment"># 重要度：官方叫 poignancy，不叫 importance</span></span><br><span class="line">        <span class="variable language_">self</span>.keywords      = keywords        <span class="comment"># 关键词集合，给关键词检索用</span></span><br><span class="line">        <span class="variable language_">self</span>.filling       = filling         <span class="comment"># 反思节点指向的证据节点</span></span><br></pre></td></tr></table></figure>
+
+<p>几个容易踩的点：</p>
+<ul>
+<li>**不是单一 <code>content</code>，而是 <code>(subject, predicate, object)</code> 三元组 + 一句自然语言 <code>description</code>**。三元组是给关键词索引用的，<code>description</code> 才是给 embedding 和 prompt 用的。</li>
+<li>**「重要度」官方叫 <code>poignancy</code>**，由 LLM 打 1–10 分（<code>perceive.py</code> 里的 <code>generate_poig_score</code>），不叫 importance。</li>
+<li><strong>时间有三个</strong>：<code>created</code>、<code>expiration</code>、<code>last_accessed</code>。新鲜度用的是 <code>last_accessed</code>，而且检索命中后会被刷新——这点后面打分要用到。</li>
+<li><strong>embedding 不直接挂在节点上</strong>，节点只存 <code>embedding_key</code>，真正的向量放在 <code>AssociativeMemory.embeddings</code> 这个大字典里（原始发布版用 OpenAI <code>text-embedding-ada-002</code>，1536 维）。这样同一句话的向量可以复用。</li>
+</ul>
+<p>记忆流本身就是三条按时间排好的链表 + 关键词倒排索引：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># memory_structures/associative_memory.py  —— AssociativeMemory.__init__</span></span><br><span class="line"><span class="variable language_">self</span>.seq_event   = []   <span class="comment"># 事件流</span></span><br><span class="line"><span class="variable language_">self</span>.seq_thought = []   <span class="comment"># 反思/想法流</span></span><br><span class="line"><span class="variable language_">self</span>.seq_chat    = []   <span class="comment"># 对话流</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">self</span>.kw_to_event   = <span class="built_in">dict</span>()  <span class="comment"># 关键词 -&gt; 事件节点列表（倒排索引）</span></span><br><span class="line"><span class="variable language_">self</span>.kw_to_thought = <span class="built_in">dict</span>()</span><br><span class="line"><span class="variable language_">self</span>.kw_to_chat    = <span class="built_in">dict</span>()</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、检索其实有「两条路」，三重打分只在其中一条上"><a href="#三、检索其实有「两条路」，三重打分只在其中一条上" class="headerlink" title="三、检索其实有「两条路」，三重打分只在其中一条上"></a>三、检索其实有「两条路」，三重打分只在其中一条上</h2><p>这是被讲得最混乱的部分。官方 <code>retrieve.py</code> 里其实有两个完全不同的函数。</p>
+<h3 id="路径-A：感知驱动的检索-retrieve-——-靠关键词，不打分"><a href="#路径-A：感知驱动的检索-retrieve-——-靠关键词，不打分" class="headerlink" title="路径 A：感知驱动的检索 retrieve() —— 靠关键词，不打分"></a>路径 A：感知驱动的检索 <code>retrieve()</code> —— 靠关键词，不打分</h3><p>主循环里 <code>self.retrieve(perceived)</code> 调的是这个。它对每个「刚感知到的事件」，按三元组里的词去倒排索引里捞相关记忆：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># persona/cognitive_modules/retrieve.py</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">persona, perceived</span>):</span><br><span class="line">    retrieved = <span class="built_in">dict</span>()</span><br><span class="line">    <span class="keyword">for</span> event <span class="keyword">in</span> perceived:</span><br><span class="line">        retrieved[event.description] = <span class="built_in">dict</span>()</span><br><span class="line">        retrieved[event.description][<span class="string">&quot;curr_event&quot;</span>] = event</span><br><span class="line">        <span class="comment"># 用 (s, p, o) 去关键词索引里捞相关 event / thought</span></span><br><span class="line">        retrieved[event.description][<span class="string">&quot;events&quot;</span>]   = <span class="built_in">list</span>(</span><br><span class="line">            persona.a_mem.retrieve_relevant_events(</span><br><span class="line">                event.subject, event.predicate, event.<span class="built_in">object</span>))</span><br><span class="line">        retrieved[event.description][<span class="string">&quot;thoughts&quot;</span>] = <span class="built_in">list</span>(</span><br><span class="line">            persona.a_mem.retrieve_relevant_thoughts(</span><br><span class="line">                event.subject, event.predicate, event.<span class="built_in">object</span>))</span><br><span class="line">    <span class="keyword">return</span> retrieved</span><br></pre></td></tr></table></figure>
+
+<p>而 <code>retrieve_relevant_events</code> 干的事极其朴素——<strong>就是关键词查倒排表，没有向量、没有打分</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># memory_structures/associative_memory.py</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve_relevant_events</span>(<span class="params">self, s_content, p_content, o_content</span>):</span><br><span class="line">    contents = [s_content, p_content, o_content]</span><br><span class="line">    ret = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> contents:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">in</span> <span class="variable language_">self</span>.kw_to_event:</span><br><span class="line">            ret += <span class="variable language_">self</span>.kw_to_event[i]</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">set</span>(ret)</span><br></pre></td></tr></table></figure>
+
+<p>所以「召回阶段」根本不是「向量相似度召回 Top100」，而是<strong>关键词命中</strong>。</p>
+<h3 id="路径-B：焦点驱动的检索-new-retrieve-——-这里才有三重打分"><a href="#路径-B：焦点驱动的检索-new-retrieve-——-这里才有三重打分" class="headerlink" title="路径 B：焦点驱动的检索 new_retrieve() —— 这里才有三重打分"></a>路径 B：焦点驱动的检索 <code>new_retrieve()</code> —— 这里才有三重打分</h3><p>真正的「新鲜度&#x2F;重要度&#x2F;相关性」三因子，在 <code>new_retrieve(persona, focal_points, n_count=30)</code> 里。它被<strong>反思、规划、对话</strong>调用（<code>reflect.py</code>、<code>plan.py</code>、<code>converse.py</code>），用一个「焦点问题」去整个记忆流里捞最相关的若干条。</p>
+<p>先看三个分量怎么算：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># persona/cognitive_modules/retrieve.py</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新鲜度：对「按 last_accessed 排好序的节点」按排名做指数衰减</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_recency</span>(<span class="params">persona, nodes</span>):</span><br><span class="line">    recency_vals = [persona.scratch.recency_decay ** i</span><br><span class="line">                    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(nodes) + <span class="number">1</span>)]   <span class="comment"># recency_decay 默认 0.99</span></span><br><span class="line">    recency_out = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> count, node <span class="keyword">in</span> <span class="built_in">enumerate</span>(nodes):</span><br><span class="line">        recency_out[node.node_id] = recency_vals[count]</span><br><span class="line">    <span class="keyword">return</span> recency_out</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重要度：直接取节点的 poignancy（LLM 之前打的 1–10）</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_importance</span>(<span class="params">persona, nodes</span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;node.node_id: node.poignancy <span class="keyword">for</span> node <span class="keyword">in</span> nodes&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 相关性：焦点句的 embedding 与每条记忆 embedding 的余弦相似度</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_relevance</span>(<span class="params">persona, nodes, focal_pt</span>):</span><br><span class="line">    focal_embedding = get_embedding(focal_pt)</span><br><span class="line">    relevance_out = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> node <span class="keyword">in</span> nodes:</span><br><span class="line">        node_embedding = persona.a_mem.embeddings[node.embedding_key]</span><br><span class="line">        relevance_out[node.node_id] = cos_sim(node_embedding, focal_embedding)</span><br><span class="line">    <span class="keyword">return</span> relevance_out</span><br></pre></td></tr></table></figure>
+
+<p>注意新鲜度的真实实现：它不是网传的 <code>1 / (0.01·Δt + 1)</code>，而是<strong>对按 <code>last_accessed</code> 排序后的节点，按排名 <code>i</code> 做 <code>0.99^i</code> 的指数衰减</strong>（论文里写的是按「沙盒游戏内小时数」衰减、衰减因子 0.995；开源代码改成了按排名、0.99，二者实现并不完全一致）。而且这里的<strong>排序方向</strong>藏着一个反直觉的坑——本节末尾专门拆（见「深挖：新鲜度排序方向其实是反的」）。</p>
+<h3 id="关键：三个分量是「加权和」，不是「累乘」"><a href="#关键：三个分量是「加权和」，不是「累乘」" class="headerlink" title="关键：三个分量是「加权和」，不是「累乘」"></a>关键：三个分量是「加权和」，不是「累乘」</h3><p>这是全文最重要的一段。把官方计算最终分数的代码原样贴出来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># persona/cognitive_modules/retrieve.py  —— new_retrieve() 内部</span></span><br><span class="line">recency_out   = normalize_dict_floats(extract_recency(persona, nodes), <span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">importance_out= normalize_dict_floats(extract_importance(persona, nodes), <span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">relevance_out = normalize_dict_floats(extract_relevance(persona, nodes, focal_pt), <span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># gw = [1, 1, 1]</span></span><br><span class="line"><span class="comment"># gw = [1, 2, 1]</span></span><br><span class="line">gw = [<span class="number">0.5</span>, <span class="number">3</span>, <span class="number">2</span>]            <span class="comment"># ← 官方当前启用的权重</span></span><br><span class="line">master_out = <span class="built_in">dict</span>()</span><br><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> recency_out.keys():</span><br><span class="line">    master_out[key] = (persona.scratch.recency_w   * recency_out[key]   * gw[<span class="number">0</span>]</span><br><span class="line">                     + persona.scratch.relevance_w * relevance_out[key] * gw[<span class="number">1</span>]</span><br><span class="line">                     + persona.scratch.importance_w* importance_out[key]* gw[<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+
+<p>看清楚连接符号是 <code>+</code>，不是 <code>*</code>。这和原论文完全一致：</p>
+<blockquote>
+<p>score &#x3D; α_recency · recency + α_importance · importance + α_relevance · relevance，<br>论文实现里所有 α 都取 1。</p>
+</blockquote>
+<p>所以网传那套「<strong>累乘塌陷</strong>」的论证——「3 个月前一条 importance&#x3D;10 的核心记忆，因为新鲜度趋近 0，三项一乘总分归零，于是被永久遗忘」——是建立在一个<strong>根本不存在的乘法</strong>上的。加权和里，某一项为 0 只是少加一块，另外两项照样把分数顶上去，不会「归零」。</p>
+<p>更有意思的是，网传的「优化方案」是「把累乘换成加权求和、弱化时间影响」。可官方<strong>本来就是加权和</strong>，而且：</p>
+<ul>
+<li><code>scratch.py</code> 默认 <code>recency_w = relevance_w = importance_w = 1</code>；</li>
+<li><code>retrieve.py</code> 里再乘一层 <code>gw = [0.5, 3, 2]</code>。</li>
+</ul>
+<p>合起来，三项的有效权重是 <strong>新鲜度 0.5、相关性 3、重要度 2</strong>。也就是说，官方<strong>早就把新鲜度压到了最低权重</strong>，相关性和重要度才是主导。网传方案兜了一圈，得到的正是官方已有的设计。</p>
+<h3 id="示例：手算一次打分（看懂”加-≠-乘”）"><a href="#示例：手算一次打分（看懂”加-≠-乘”）" class="headerlink" title="示例：手算一次打分（看懂”加 ≠ 乘”）"></a>示例：手算一次打分（看懂”加 ≠ 乘”）</h3><p>设 Isabella 在规划，焦点问题 &#x3D;「我该怎么筹备情人节派对？」，记忆流里有 4 条候选（真实代码对<strong>所有</strong>记忆都算，这里取 4 条便于手算）。三项分各自归一化到 0–1 后：</p>
+<table>
+<thead>
+<tr>
+<th>记忆</th>
+<th align="center">新鲜度ᴺ</th>
+<th align="center">相关性ᴺ</th>
+<th align="center">重要度ᴺ</th>
+<th align="center">加权和 <code>0.5R+3Rel+2Imp</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>M1 我正在筹备派对</td>
+<td align="center">0.80</td>
+<td align="center">1.00</td>
+<td align="center">1.00</td>
+<td align="center"><strong>5.40</strong> ①</td>
+</tr>
+<tr>
+<td>M4 Sam 说他可能来派对</td>
+<td align="center">0.60</td>
+<td align="center">0.81</td>
+<td align="center">0.56</td>
+<td align="center"><strong>3.85</strong> ②</td>
+</tr>
+<tr>
+<td>M2 我热爱把大家聚到一起（很老的人格洞见）</td>
+<td align="center">0.00</td>
+<td align="center">0.56</td>
+<td align="center">0.89</td>
+<td align="center"><strong>3.47</strong> ③</td>
+</tr>
+<tr>
+<td>M3 我今早喝了杯咖啡</td>
+<td align="center">1.00</td>
+<td align="center">0.00</td>
+<td align="center">0.00</td>
+<td align="center"><strong>0.50</strong> ④</td>
+</tr>
+</tbody></table>
+<p>那条<strong>又老、又很久没用过的人格洞见 M2，仍拿 3.47 稳稳入选</strong>；而”刚喝咖啡”的废话 M3 垫底。这正是我们想要的。</p>
+<p>可要是按网传的<strong>累乘</strong> <code>R×Rel×Imp</code> 呢？M2 &#x3D; <code>0.00 × 0.56 × 0.89 = 0</code> 💥——只因新鲜度&#x3D;0，它 0.89 的高重要度、0.56 的相关性全被”一票否决”，彻底丢失。这就是”累乘塌陷”的来历。<strong>官方是加法，M2 活得好好的；那个会塌陷的乘法根本不存在。</strong></p>
+<p>最后取多少条？是 <code>top_highest_x_values(master_out, n_count)</code>，<code>n_count</code> 默认 30；<code>converse.py</code> 里按场景用 15 &#x2F; 25 &#x2F; 50。<strong>没有固定的「Top100 → Top10」两段漏斗</strong>。命中后还会顺手刷新 <code>last_accessed</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">master_out = top_highest_x_values(master_out, n_count)</span><br><span class="line">master_nodes = [persona.a_mem.id_to_node[key] <span class="keyword">for</span> key <span class="keyword">in</span> master_out.keys()]</span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> master_nodes:</span><br><span class="line">    n.last_accessed = persona.scratch.curr_time   <span class="comment"># 被检索到 = 变「新」</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="深挖：新鲜度排序方向其实是反的"><a href="#深挖：新鲜度排序方向其实是反的" class="headerlink" title="深挖：新鲜度排序方向其实是反的"></a>深挖：新鲜度排序方向其实是反的</h3><p>前面留了个坑：新鲜度按「排名」算，那排名是怎么排的？把 <code>new_retrieve</code> 里和排序相关的三步原样拆开看，会发现实现和直觉是反的。</p>
+<p><strong>第 1 步——收集 + 排序</strong>（<code>new_retrieve</code>，第 224–228 行）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">nodes = [[i.last_accessed, i]</span><br><span class="line">          <span class="keyword">for</span> i <span class="keyword">in</span> persona.a_mem.seq_event + persona.a_mem.seq_thought</span><br><span class="line">          <span class="keyword">if</span> <span class="string">&quot;idle&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> i.embedding_key]</span><br><span class="line">nodes = <span class="built_in">sorted</span>(nodes, key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>])   <span class="comment"># 按 last_accessed 升序，无 reverse=</span></span><br><span class="line">nodes = [i <span class="keyword">for</span> created, i <span class="keyword">in</span> nodes]</span><br></pre></td></tr></table></figure>
+
+<p><code>sorted(...)</code> 不带 <code>reverse=</code> 就是<strong>升序</strong>，排序键是 <code>last_accessed</code>。所以 <code>nodes[0]</code> 是「最后一次访问最早」的那条（<strong>最旧</strong>），<code>nodes[-1]</code> 是<strong>最近访问过</strong>的那条。（注释写的是 “sorting them by the datetime of creation”、解包变量也叫 <code>created</code>，但代码实际按 <code>last_accessed</code> 排——这一段本身就有点糙。）</p>
+<p><strong>第 2 步——按位置分配衰减权重</strong>（<code>extract_recency</code>）：<code>recency_vals = [0.99¹, 0.99², …, 0.99ⁿ]</code> 是<strong>单调递减</strong>的，下标 0 拿到最大值 0.99，最后一个下标拿到最小值。而 <code>enumerate(nodes)</code> 把下标 0 给了 <code>nodes[0]</code>，也就是<strong>最旧</strong>那条。</p>
+<p><strong>第 3 步——归一化</strong>到 [0,1]：min‑max 是单调变换，只改范围、<strong>不改顺序</strong>。</p>
+<p>三步组合：<strong>最旧的记忆拿到最高新鲜度，刚访问过的记忆拿到最低</strong>。我把这段逻辑<strong>原样</strong>跑在 5 条样本上（<code>recency_decay=0.99</code>）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">node（按 last_accessed 排序）       原始 recency    归一化</span><br><span class="line">OLDEST_3monthsAgo（3个月前）          0.99000        1.000   ← 最高</span><br><span class="line">old                                   0.98010        0.746</span><br><span class="line">mid                                   0.97030        0.495</span><br><span class="line">recent                                0.96060        0.246</span><br><span class="line">JUST_ACCESSED_now（1分钟前）          0.95099        0.000   ← 最低</span><br></pre></td></tr></table></figure>
+
+<p>这和论文意图正好相反（论文：「最近访问的记忆得分更高，按距上次访问的游戏小时数做指数衰减」）。更微妙的是，检索命中后会<strong>刷新</strong> <code>last_accessed</code>（上面那段 <code>n.last_accessed = curr_time</code>），于是你刚捞出来的记忆会被推到列表末尾 → 下次反而拿到<strong>最低</strong>的新鲜度，等于反了两层。</p>
+<p>我把整个 <code>retrieve.py</code> grep 了一遍：<strong>唯一</strong>的 <code>reverse=True</code> 在 <code>top_highest_x_values</code> 里（给<strong>最终分数</strong>降序排、挑 Top‑N 用），节点排序这条链路里**没有任何 <code>reversed()</code>**。所以二手资料里那句「原版代码会 reverse 一下修正」，对照真实 <code>main</code> 分支并不成立。</p>
+<p>那这算 bug 吗？<code>decay ** i</code> 这个写法只有在「<code>i=1</code> 对应最近的节点」时才说得通，所以意图应该是「最近的拿最高权重」，和实现正好差了一次反转——更像疏漏，不像设计。但<strong>实际影响有限</strong>，因为前面算过：新鲜度有效权重只有 0.5，而相关性 3、重要度 2；归一化后新鲜度对总分的全部贡献至多 0.5，排序本就由相关性 + poignancy 主导。<strong>模拟跑起来依旧合理，不是因为新鲜度算对了，而是因为它几乎不影响大局。</strong></p>
+<p>接着前面那张 M1–M4 表看「影响到底有多大」：把它们的新鲜度换成官方代码的真实算法（最旧的 M2 反而拿最高、最新的 M3 拿最低），相关性、重要度不变，再算一遍加权和——排名从 <code>M1 &gt; M4 &gt; M2 &gt; M3</code> 变成 <code>M1 &gt; M2 &gt; M4 &gt; M3</code>：<strong>只有 M2、M4 对调，冠军和垫底纹丝不动，最终入选的还是那 3 条。</strong> 方向虽然反了，但新鲜度权重只有 0.5，撼不动由相关性(3)+重要度(2)定下的大局——这就是”真有瑕疵、却基本无害”的实证。</p>
+<p>如果你要在此基础上二次开发、且确实在意「越近越优先」，一行就能修——在<strong>且仅在一处</strong>反转：<code>sorted(..., reverse=True)</code>、或 <code>enumerate(reversed(nodes))</code>、或把 <code>recency_vals</code> 倒着生成。只能改一处，改两处会互相抵消又反回去。</p>
+<p><strong>这个反转有别人指出过吗？</strong> 我专门做了一轮全网交叉检索（官方 issue&#x2F;PR、约三千个 fork、中英文博客与论坛）。据笔者检索所及，<strong>公开渠道几乎无人讨论过这个排序方向问题</strong>：官方 issue&#x2F;PR 对 <code>recency</code> &#x2F; <code>last_accessed</code> &#x2F; <code>extract_recency</code> 零提及，唯一改动过 <code>retrieve.py</code> 的重构 PR #198 甚至把它一字不差照搬了，还加了句 <code># ... most recent last</code> 的注释却没察觉方向是反的。网上反复出现的只有「累乘 vs 加权和」那个<strong>另一回事</strong>的误解（见本节开头），和这里的方向问题不能混为一谈。</p>
+<p>最耐人寻味的旁证是：<strong>斯坦福作者自己 2024 年的重写版 <a href="https://github.com/joonspk-research/genagents"><code>StanfordHCI/genagents</code></a> 已经把这段悄悄改对了</strong>——新版按<strong>真实时间差</strong>衰减，而不再按列表位置：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># genagents/modules/memory_stream.py —— 新版 extract_recency</span></span><br><span class="line">max_timestep = <span class="built_in">max</span>(node.last_retrieved <span class="keyword">for</span> node <span class="keyword">in</span> seq_nodes)</span><br><span class="line">recency_decay = <span class="number">0.99</span></span><br><span class="line"><span class="keyword">for</span> node <span class="keyword">in</span> seq_nodes:</span><br><span class="line">    recency_out[node.node_id] = recency_decay ** (max_timestep - node.last_retrieved)</span><br><span class="line"><span class="comment"># 最近检索的节点 last_retrieved == max_timestep → 0.99^0 = 1.0（最高），方向终于对了</span></span><br></pre></td></tr></table></figure>
+
+<p>GPTeam、AI Town、MetaGPT 等独立复刻也都改用「真实时间差」算新鲜度，结构上绕开了这个坑——但同样，<strong>没有任何一处注释或 commit 说明原版是反的</strong>。所以这更像一个「存在、被下游不断复制、被作者自己默默改对，却从未被公开指认」的实现细节。</p>
+<h2 id="四、Agent-之间怎么互相感知、怎么对话？没有「广播」这回事"><a href="#四、Agent-之间怎么互相感知、怎么对话？没有「广播」这回事" class="headerlink" title="四、Agent 之间怎么互相感知、怎么对话？没有「广播」这回事"></a>四、Agent 之间怎么互相感知、怎么对话？没有「广播」这回事</h2><p>网传版本里有一套 <code>env.broadcast()</code> 往 3×3 网格广播、<code>env.update()</code> 只做视图同步的说法。官方源码里<strong>这两个方法都不存在</strong>。真实机制是这样的：</p>
+<h3 id="1）事件写在地图瓦片（maze-tile）上"><a href="#1）事件写在地图瓦片（maze-tile）上" class="headerlink" title="1）事件写在地图瓦片（maze tile）上"></a>1）事件写在地图瓦片（maze tile）上</h3><p>后端主循环 <code>start_server()</code> 每个 step 先把所有 Agent 同步到前端给的新坐标，并<strong>把每个人「当前在干什么」作为事件写到它所在的瓦片上</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># reverie.py  —— ReverieServer.start_server() 主循环（节选）</span></span><br><span class="line"><span class="keyword">for</span> persona_name, persona <span class="keyword">in</span> <span class="variable language_">self</span>.personas.items():</span><br><span class="line">    new_tile = (new_env[persona_name][<span class="string">&quot;x&quot;</span>], new_env[persona_name][<span class="string">&quot;y&quot;</span>])</span><br><span class="line">    <span class="variable language_">self</span>.personas_tile[persona_name] = new_tile</span><br><span class="line">    <span class="comment"># 把旧瓦片上这个人的事件移除，再把它的当前事件写到新瓦片</span></span><br><span class="line">    <span class="variable language_">self</span>.maze.remove_subject_events_from_tile(persona.name, curr_tile)</span><br><span class="line">    <span class="variable language_">self</span>.maze.add_event_from_tile(</span><br><span class="line">        persona.scratch.get_curr_event_and_desc(), new_tile)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2）别的-Agent-靠-perceive-主动「看」周围瓦片"><a href="#2）别的-Agent-靠-perceive-主动「看」周围瓦片" class="headerlink" title="2）别的 Agent 靠 perceive() 主动「看」周围瓦片"></a>2）别的 Agent 靠 <code>perceive()</code> 主动「看」周围瓦片</h3><p>事件不是被推送给谁，而是<strong>留在地图上</strong>，谁路过、谁在视野范围内，谁自己去读。这就是 <code>perceive()</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># persona/cognitive_modules/perceive.py  —— perceive()（节选）</span></span><br><span class="line"><span class="comment"># 1. 取视野半径 vision_r 内的瓦片</span></span><br><span class="line">nearby_tiles = maze.get_nearby_tiles(persona.scratch.curr_tile,</span><br><span class="line">                                     persona.scratch.vision_r)   <span class="comment"># 默认 4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 收集同一 arena 内、这些瓦片上的事件，按距离排序</span></span><br><span class="line">percept_events_list = <span class="built_in">sorted</span>(percept_events_list, key=itemgetter(<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 只取最近的 att_bandwidth 条（注意力带宽，默认 3）</span></span><br><span class="line"><span class="keyword">for</span> dist, event <span class="keyword">in</span> percept_events_list[:persona.scratch.att_bandwidth]:</span><br><span class="line">    perceived_events += [event]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 用 retention（默认 5）去重：最近见过的就不重复感知/入库</span></span><br><span class="line">latest_events = persona.a_mem.get_summarized_latest_events(persona.scratch.retention)</span><br><span class="line"><span class="keyword">if</span> p_event <span class="keyword">not</span> <span class="keyword">in</span> latest_events:</span><br><span class="line">    <span class="comment"># ... 算 poignancy、算 embedding，写入 a_mem ...</span></span><br></pre></td></tr></table></figure>
+
+<p>所以「感知」由三个超参数控制（都在 <code>scratch.py</code>）：</p>
+<ul>
+<li><code>vision_r = 4</code>：能看多远；</li>
+<li><code>att_bandwidth = 3</code>：一次最多注意几件事；</li>
+<li><code>retention = 5</code>：最近 N 条内见过就不重复记。</li>
+</ul>
+<p><strong>这是一套「拉取式」的感知，不是「推送式」的广播。</strong> 网传那套 <code>broadcast</code> API，更像是 AI Town 等第三方复刻项目的设计，被安到了斯坦福原版头上——讽刺的是，网传版本一边说「别人的双广播是魔改」，一边自己用的也不是原版 API。</p>
+<h3 id="3）前端只负责「把人画出来、把人挪过去」"><a href="#3）前端只负责「把人画出来、把人挪过去」" class="headerlink" title="3）前端只负责「把人画出来、把人挪过去」"></a>3）前端只负责「把人画出来、把人挪过去」</h3><p>后端算完，写出 <code>movement/&#123;step&#125;.json</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># reverie.py  —— start_server()，写给前端的结果</span></span><br><span class="line">movements[<span class="string">&quot;persona&quot;</span>][persona_name] = &#123;</span><br><span class="line">    <span class="string">&quot;movement&quot;</span>:    next_tile,                  <span class="comment"># 下一步去哪</span></span><br><span class="line">    <span class="string">&quot;pronunciatio&quot;</span>: pronunciatio,              <span class="comment"># 一个 emoji</span></span><br><span class="line">    <span class="string">&quot;description&quot;</span>:  description,                <span class="comment"># 文字描述</span></span><br><span class="line">    <span class="string">&quot;chat&quot;</span>:         persona.scratch.chat,      <span class="comment"># 对话内容（如果有）</span></span><br><span class="line">&#125;</span><br><span class="line">curr_move_file = <span class="string">f&quot;<span class="subst">&#123;sim_folder&#125;</span>/movement/<span class="subst">&#123;self.step&#125;</span>.json&quot;</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(curr_move_file, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> outfile:</span><br><span class="line">    outfile.write(json.dumps(movements, indent=<span class="number">2</span>))</span><br><span class="line"><span class="variable language_">self</span>.step += <span class="number">1</span></span><br><span class="line"><span class="variable language_">self</span>.curr_time += datetime.timedelta(seconds=<span class="variable language_">self</span>.sec_per_step)</span><br></pre></td></tr></table></figure>
+
+<p>前端读到后让角色走过去，走到了再把新坐标写回 <code>environment/&#123;step+1&#125;.json</code>，进入下一轮。<strong>前端确实只做渲染、不含任何 AI 逻辑</strong>——这一点网传版本说对了，只是它把这件事安在了一个不存在的 <code>env.update()</code> 上。</p>
+<h3 id="4）对话：不是「轮流发消息」，是发起方一次性生成整场"><a href="#4）对话：不是「轮流发消息」，是发起方一次性生成整场" class="headerlink" title="4）对话：不是「轮流发消息」，是发起方一次性生成整场"></a>4）对话：不是「轮流发消息」，是发起方一次性生成整场</h3><p>上面讲的是「感知」。但两个 Agent 真要「说上话」，机制和绝大多数人想的都不一样——这也是连英文解读都讲不准的地方。</p>
+<p>当 A 在 <code>plan()</code> 阶段感知到 B，会先走一段<strong>对话决策</strong>（<code>plan.py</code>）：过一堆硬性闸门（没在睡、不是 23 点、双方都没在聊天、冷却期已过……），再调一次 LLM 问「该不该上去搭话」（<code>generate_decide_to_talk</code>，返回 yes&#x2F;no）。</p>
+<p>一旦决定搭话，<strong>整场对话由 A 在自己这一个回合里一次性生成完</strong>（<code>converse.py</code> 的 <code>agent_chat_v2</code>），最多 8 个来回：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># converse.py —— agent_chat_v2（节选）</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):                       <span class="comment"># 最多 8 轮，每轮双方各一句</span></span><br><span class="line">    <span class="comment"># A 这一句：从【A 自己】的记忆里检索 + 总结 A 对 B 的关系</span></span><br><span class="line">    retrieved = new_retrieve(init_persona, [target_persona.name], <span class="number">50</span>)</span><br><span class="line">    relationship = generate_summarize_agent_relationship(init_persona, target_persona, retrieved)</span><br><span class="line">    utt, end = generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_chat)</span><br><span class="line">    curr_chat += [[init_persona.name, utt]]</span><br><span class="line">    <span class="keyword">if</span> end: <span class="keyword">break</span></span><br><span class="line">    <span class="comment"># B 这一句：注意改成从【B 自己】的记忆检索、总结【B】对 A 的关系认知</span></span><br><span class="line">    retrieved = new_retrieve(target_persona, [init_persona.name], <span class="number">50</span>)</span><br><span class="line">    relationship = generate_summarize_agent_relationship(target_persona, init_persona, retrieved)</span><br><span class="line">    utt, end = generate_one_utterance(maze, target_persona, init_persona, retrieved, curr_chat)</span><br><span class="line">    curr_chat += [[target_persona.name, utt]]</span><br><span class="line">    <span class="keyword">if</span> end: <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>最反直觉的点</strong>：虽然是同一个进程在跑，但生成「B 说的那句」时，代码是去 <strong>B 自己的记忆</strong>里检索、并总结 <strong>B 对 A 的关系认知</strong>——所以每句话仍然扎根「说话人自己」的记忆，<strong>不是 A 替 B 瞎编</strong>。（注：<code>v1</code> 和更早的「一次出整段」<code>run_gpt_prompt_create_conversation</code> 都被注释掉了，当前走的是 <code>v2</code>，注释自述「optimized for speed via batch generation」。）</p>
+<p>生成好后，完整对话 + 「正在和对方聊天、持续到某时刻」的状态，会被<strong>同时写进 A 和 B 两个人</strong>（<code>_chat_react</code>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># plan.py —— _chat_react（节选）</span></span><br><span class="line">convo, duration_min = generate_convo(maze, init_persona, target_persona)   <span class="comment"># 整场对话</span></span><br><span class="line">convo_summary = generate_convo_summary(init_persona, convo)                <span class="comment"># 概括成一条记忆</span></span><br><span class="line"><span class="keyword">for</span> role, p <span class="keyword">in</span> [(<span class="string">&quot;init&quot;</span>, init_persona), (<span class="string">&quot;target&quot;</span>, target_persona)]:       <span class="comment"># ← 写进【两个人】</span></span><br><span class="line">    chatting_with        = 对方.name</span><br><span class="line">    chatting_with_buffer = &#123;对方.name: <span class="number">800</span>&#125;        <span class="comment"># 冷却值，防止马上再聊</span></span><br><span class="line">    _create_react(p, convo_summary, duration_min, ..., chatting_with, convo, ...)</span><br></pre></td></tr></table></figure>
+
+<p>于是等 B 在循环里轮到时，<code>_should_react</code> 第一行就因 <code>persona.scratch.chatting_with</code> 已被置上而直接返回 <code>False</code>——B 不再重新决策，直接执行这场已经生成好的对话。聊完那个 <code>chatting_with_buffer = 800</code> 会每步递减，冷却期内不会马上又凑上去，避免两人无限对话。</p>
+<h3 id="5）谁先开口，取决于循环顺序"><a href="#5）谁先开口，取决于循环顺序" class="headerlink" title="5）谁先开口，取决于循环顺序"></a>5）谁先开口，取决于循环顺序</h3><p>于是网传那句「列表顺序影响相遇」其实<strong>直觉没错，只是机制不是广播</strong>。准确地说要拆成两半：</p>
+<ul>
+<li><strong>位置&#x2F;感知与顺序无关</strong>：<code>start_server()</code> 先用<strong>第一个循环</strong>把所有 Agent 都摆到本 step 的新瓦片上，再用<strong>第二个循环</strong>让每个人 <code>move()</code>。等任何一个人开始感知时，所有人的位置在本 step 内已经定死，谁先 <code>perceive</code> 都看到相同位置；而且这些位置来自<strong>前端上一 step 的结果</strong>，天然带一个 step 的延迟（来自前后端文件往返，不是「刻意设计的时序差」）。</li>
+<li><strong>但对话的发起强依赖顺序</strong>：第二个循环是<strong>串行</strong>调用 <code>move()</code> 的（<code>for persona_name, persona in self.personas.items()</code>）。<strong>谁先轮到、且通过 <code>generate_decide_to_talk</code> 判定，谁就成为发起方</strong>，在自己回合里把整场对话和 <code>chatting_with</code> 状态直接写进对方；对方轮到时只能执行这场已生成好的对话。所以 <code>self.personas</code> 的迭代顺序，确实决定了「谁主动开口」。</li>
+</ul>
+<h3 id="6）一个完整场景：Isabella-撞见-Klaus"><a href="#6）一个完整场景：Isabella-撞见-Klaus" class="headerlink" title="6）一个完整场景：Isabella 撞见 Klaus"></a>6）一个完整场景：Isabella 撞见 Klaus</h3><p>把感知和对话连起来走一遍。两人都在 Hobbs 咖啡馆，相距 2 格（在 <code>vision_r=4</code> 内）。</p>
+<p><strong>后端第一遍循环</strong>：把两人摆到格子上，各自贴便条——Isabella 格子挂 <code>(Isabella, 筹备, 派对)</code>，Klaus 格子挂 <code>(Klaus, 写, 论文)</code>。</p>
+<p><strong>第二遍循环先轮到 Isabella</strong>（<code>move()</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>发生了什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>perceive</td>
+<td>扫视野，读到隔壁格子 <code>Klaus 在写论文</code>，收进记忆</td>
+</tr>
+<tr>
+<td>retrieve</td>
+<td>用关键词「Klaus」捞出和他相关的旧记忆</td>
+</tr>
+<tr>
+<td>plan</td>
+<td>当前事件主角是「Klaus」→ 闸门全过 → LLM 判定要不要搭话 → <strong>yes</strong></td>
+</tr>
+<tr>
+<td>→ <code>_chat_react</code></td>
+<td><code>agent_chat_v2</code> <strong>一次性生成整段对话</strong>，写进 <strong>Isabella 和 Klaus 两人</strong></td>
+</tr>
+<tr>
+<td>execute</td>
+<td>走向 Klaus，头顶 💬</td>
+</tr>
+</tbody></table>
+<p>生成的对话（每句各扎根说话人自己的记忆）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Isabella: 嘿 Klaus！我在咖啡馆办情人节派对，来吗？      ← 出自 Isabella 记忆（她在筹备派对）</span><br><span class="line">Klaus:    听起来不错，我正埋在论文里，正好歇歇，算我一个。 ← 出自 Klaus 记忆（他在写论文）</span><br></pre></td></tr></table></figure>
+
+<p><strong>同一步轮到 Klaus 时</strong>：<code>_should_react</code> 发现他的 <code>chatting_with</code> 已是 Isabella → 直接返回 <code>False</code>，不再决策，只<strong>执行</strong>这段已经生成好的对话。</p>
+<p>如果换成 Klaus 在 <code>self.personas</code> 里排在 Isabella 前面、又通过了判定，那就会是 <strong>Klaus 发起</strong>——这就是「谁先开口取决于循环顺序」。聊完那个 <code>chatting_with_buffer = 800</code> 会防止两人马上又粘上。</p>
+<h2 id="五、认知模块细看：反思（Reflect）与规划（Plan）"><a href="#五、认知模块细看：反思（Reflect）与规划（Plan）" class="headerlink" title="五、认知模块细看：反思（Reflect）与规划（Plan）"></a>五、认知模块细看：反思（Reflect）与规划（Plan）</h2><p>前面把记忆、检索、感知、对话都讲清楚了，但认知链里的 <code>reflect</code> 和 <code>plan</code> 还只是一笔带过。这一节补上——它们解释了 Agent 凭什么能「有人格地活一整天」，而不是每步随机乱走。顺带把<strong>所有 LLM 调用共用的那套骨架</strong>也讲了。</p>
+<h3 id="1）反思-Reflect：攒够「感触」才停下来提炼"><a href="#1）反思-Reflect：攒够「感触」才停下来提炼" class="headerlink" title="1）反思 Reflect：攒够「感触」才停下来提炼"></a>1）反思 Reflect：攒够「感触」才停下来提炼</h3><p>反思不是每步都做，而是<strong>经历累积到一定程度</strong>才触发。每个 Agent 有个倒计时计数器，从 150 开始；每感知一件事，就按这件事的重要度（<code>poignancy</code>，LLM 打的 1–10 分）往下扣，扣到 ≤ 0 就反思：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># scratch.py</span></span><br><span class="line"><span class="variable language_">self</span>.importance_trigger_max  = <span class="number">150</span></span><br><span class="line"><span class="variable language_">self</span>.importance_trigger_curr = <span class="number">150</span>          <span class="comment"># 倒计时</span></span><br><span class="line"><span class="comment"># perceive.py：每感知一件事就扣它的 poignancy</span></span><br><span class="line">persona.scratch.importance_trigger_curr -= event_poignancy</span><br><span class="line"><span class="comment"># reflect.py：扣到 0（且有记忆）就触发</span></span><br><span class="line"><span class="keyword">if</span> persona.scratch.importance_trigger_curr &lt;= <span class="number">0</span> <span class="keyword">and</span> 有记忆:</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>越是经历「重磅」事件，越快触发反思。触发后分三步：</p>
+<ol>
+<li><strong>提焦点</strong>：把最近的记忆拼成文本，问 LLM「这些信息里最值得问的 3 个高层问题是什么？」（<code>generate_focal_points</code>）。</li>
+<li><strong>捞素材</strong>：对每个问题，用第三节那套加权和打分的 <code>new_retrieve</code> 捞相关记忆。</li>
+<li><strong>出洞见 + 记证据</strong>：让 LLM 对每个问题给 5 条高层洞见，格式强制带「(because of 1, 5, 3)」——逼它说出<strong>每条结论由哪几条记忆支撑</strong>。</li>
+</ol>
+<p>洞见会被存成一种特殊的「想法（thought）」节点，关键在 <code>add_thought</code> 里的 <code>depth</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># associative_memory.py</span></span><br><span class="line">depth = <span class="number">1</span></span><br><span class="line"><span class="keyword">if</span> filling:                          <span class="comment"># filling = 支撑这条洞见的证据节点</span></span><br><span class="line">    depth += <span class="built_in">max</span>(证据节点们的 depth)   <span class="comment"># 站在下层记忆的肩膀上</span></span><br></pre></td></tr></table></figure>
+
+<p>普通观察 <code>depth=0</code>，第一层反思 <code>depth=1</code>，<strong>基于反思再反思 <code>depth=2、3…</code><strong>。于是记忆不是一摊平面，而是一棵</strong>越往上越抽象</strong>的树：「我今天又在咖啡馆写作」→「我热爱写作」→「我是个有创造力的人」。这正是 Agent 能形成并维持稳定人格的来源——也是真正该关注的「长期人设」抓手（远比新鲜度公式重要）。反思完计数器复位回 150。</p>
+<p><strong>示例</strong>：Isabella 这几天的事件累计 poignancy 到 150 → 触发反思。提焦点（LLM）得到问题「Isabella 和咖啡馆社区是什么关系？」；检索捞到 <code>布置咖啡馆</code>(1)、<code>邀请 Klaus</code>(4)、<code>和 Maria 聊派对</code>(7) 等；LLM 出洞见 <code>Isabella loves bringing people together (because of 1, 4, 7)</code>，存成一个 <code>depth=1</code>、<code>filling=[1,4,7]</code> 的 thought 节点。<strong>这条洞见正是前面检索示例里那条”很老的人格洞见 M2”的出处</strong>——反思节点 poignancy 高，所以即便很久没用，也能在检索里活下来。</p>
+<h3 id="2）规划-Plan：从一句话到「下一格走哪」的三级漏斗"><a href="#2）规划-Plan：从一句话到「下一格走哪」的三级漏斗" class="headerlink" title="2）规划 Plan：从一句话到「下一格走哪」的三级漏斗"></a>2）规划 Plan：从一句话到「下一格走哪」的三级漏斗</h3><p>规划是个<strong>从粗到细</strong>的漏斗，跟人排日程一样。新的一天先定大框架：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># plan.py：_long_term_planning</span></span><br><span class="line">wake_up_hour = generate_wake_up_hour(persona)                     <span class="comment"># ① 几点起</span></span><br><span class="line">persona.scratch.daily_req = generate_first_daily_plan(...)        <span class="comment"># ② 今天大致干嘛（broad strokes）</span></span><br><span class="line">persona.scratch.f_daily_schedule = generate_hourly_schedule(...)  <span class="comment"># ③ 拆到每个小时</span></span><br><span class="line">persona.scratch.f_daily_schedule_hourly_org = f_daily_schedule[:] <span class="comment"># 备份未拆的小时版</span></span><br></pre></td></tr></table></figure>
+
+<p>（注意有<strong>两份日程</strong>：<code>f_daily_schedule</code> 后面会被就地拆细，<code>f_daily_schedule_hourly_org</code> 保留原始小时版作参照。每天开头若非第一天，还会先 <code>revise_identity</code> 重写「现状 &#x2F; 今日打算」——这是人设逐日演化的地方。）</p>
+<p>真要动手时，才把<strong>当前这一小时</strong>拆成 5 分钟一段（睡觉不拆、深夜不拆，省 token）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># plan.py：_determine_action</span></span><br><span class="line"><span class="keyword">if</span> act_dura &gt;= <span class="number">60</span> <span class="keyword">and</span> 需要拆:</span><br><span class="line">    f_daily_schedule[curr_index:curr_index+<span class="number">1</span>] = generate_task_decomp(persona, act_desp, act_dura)</span><br></pre></td></tr></table></figure>
+
+<p>最后把抽象任务落到地图上的具体位置——三次级联 LLM 调用定位到「世界:区:场地:物件」，再配 emoji 和事件三元组：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># plan.py：_determine_action</span></span><br><span class="line">act_world  = maze.access_tile(curr_tile)[<span class="string">&quot;world&quot;</span>]       <span class="comment"># 世界取自脚下瓦片</span></span><br><span class="line">act_sector = generate_action_sector(act_desp, ...)      <span class="comment"># 哪个区（家 / 咖啡馆…）</span></span><br><span class="line">act_arena  = generate_action_arena(act_desp, ...)       <span class="comment"># 哪个场地（厨房 / 书房…）</span></span><br><span class="line">act_obj    = generate_action_game_object(act_desp, ...) <span class="comment"># 哪个物件（书桌 / 床…）</span></span><br><span class="line"><span class="comment"># → &quot;the Ville:Isabella&#x27;s house:bedroom:desk&quot; + ✍️ + (Isabella, 写, 小说)</span></span><br></pre></td></tr></table></figure>
+
+<p>这份结果交给 <code>execute()</code>，就变成第一节里 <code>movement/&#123;step&#125;.json</code> 那份「下一格 + emoji + 描述」——<strong>plan 和主循环在这里接上</strong>。</p>
+<p><strong>示例</strong>：Isabella 的一天怎么从一句话层层展开——</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">① 粗日程: 7 点起 → 8 点开店 → 下午 1–5 点布置派对 → 5–7 点办派对 → 收拾睡觉</span><br><span class="line">② 小时表: 7–8 晨间例行 / 8–9 开店 / 9–12 招呼客人 / 13–17 布置派对 / ...</span><br><span class="line">③ 到 13:00 把&quot;布置派对&quot;这一小时拆成 5 分钟段: 收集材料(15min) → 挂横幅(30min) → 摆桌花(...) → ...</span><br><span class="line">④ &quot;挂横幅&quot;落到地图: &quot;the Ville:Hobbs Cafe:cafe:wall&quot; + 🎀 + (Isabella, decorating, cafe)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3）所有-LLM-调用共用的骨架：模板填空-校对重试"><a href="#3）所有-LLM-调用共用的骨架：模板填空-校对重试" class="headerlink" title="3）所有 LLM 调用共用的骨架：模板填空 + 校对重试"></a>3）所有 LLM 调用共用的骨架：模板填空 + 校对重试</h3><p>斯坦福小镇里对 GPT 的每一次调用，都不是随手拼字符串，而是统一走「模板填空 → 调用 → 解析校对 → 出错重试」。模板是 <code>.txt</code> 文件，用 <code>!&lt;INPUT i&gt;!</code> 占位，且只取 <code>&lt;commentblockmarker&gt;###&lt;/commentblockmarker&gt;</code> 之后的正文（之前是给人看的注释）。版本上 <code>v1</code>&#x3D;GPT-3、<code>v2</code>&#x3D;davinci、<code>v3_ChatGPT</code>&#x3D;gpt-3.5-turbo 的 JSON 版。</p>
+<p>以反思洞见模板为例（<code>v2/insight_and_evidence_v1.txt</code>）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Input:</span><br><span class="line">!&lt;INPUT 0&gt;!</span><br><span class="line"></span><br><span class="line">What !&lt;INPUT 1&gt;! high-level insights can you infer from the above statements? (example format: insight (because of 1, 5, 3))</span><br><span class="line">1.</span><br></pre></td></tr></table></figure>
+
+<p>配套一定有个解析器，把 LLM 的自由文本抠成结构化结果——这就是「(because of 1,5,3)」存在的原因：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># run_gpt_prompt.py：run_gpt_prompt_insight_and_guidance 的解析器</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">__func_clean_up</span>(<span class="params">gpt_response, prompt=<span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    ret = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> gpt_response.split(<span class="string">&quot;\n&quot;</span>):</span><br><span class="line">        row = i.split(<span class="string">&quot;. &quot;</span>)[-<span class="number">1</span>]</span><br><span class="line">        thought = row.split(<span class="string">&quot;(because of &quot;</span>)[<span class="number">0</span>].strip()        <span class="comment"># 前半 = 洞见</span></span><br><span class="line">        evi_raw = row.split(<span class="string">&quot;(because of &quot;</span>)[<span class="number">1</span>].split(<span class="string">&quot;)&quot;</span>)[<span class="number">0</span>]   <span class="comment"># 后半 = 证据编号</span></span><br><span class="line">        ret[thought] = [<span class="built_in">int</span>(x) <span class="keyword">for</span> x <span class="keyword">in</span> re.findall(<span class="string">r&#x27;\d+&#x27;</span>, evi_raw)]</span><br><span class="line">    <span class="keyword">return</span> ret</span><br><span class="line"><span class="comment"># 最多重试 5 次：拼输入 → 调用 → 校验 → 清洗，全失败返回兜底值</span></span><br><span class="line">output = safe_generate_response(prompt, gpt_param, <span class="number">5</span>, fail_safe, __func_validate, __func_clean_up)</span><br></pre></td></tr></table></figure>
+
+<p>看懂这段就看懂了整套系统的骨架：<strong>模板出题 → GPT 作答 → 解析器按约定格式抠结构、抠不出就重试</strong>。<code>reflect</code>、<code>plan</code>、对话生成——全是这一个模式的不同「填空题」而已。</p>
+<h2 id="六、对照表-落地建议"><a href="#六、对照表-落地建议" class="headerlink" title="六、对照表 &amp; 落地建议"></a>六、对照表 &amp; 落地建议</h2><p>把网传结论和官方源码并排放一下：</p>
+<table>
+<thead>
+<tr>
+<th>网传说法</th>
+<th>官方源码 &#x2F; 论文实际</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>检索分 &#x3D; 新鲜度 × 重要度 × 相关性（累乘）</td>
+<td><strong>加权和</strong>：<code>0.5·recency + 3·relevance + 2·importance</code>（论文 α 全取 1）</td>
+</tr>
+<tr>
+<td>累乘塌陷导致长期核心记忆丢失</td>
+<td>不存在乘法，自然没有「归零」；且新鲜度权重最低（0.5）</td>
+</tr>
+<tr>
+<td>优化方案：改成加权求和、弱化时间</td>
+<td>官方本来就是加权和、本来就弱化时间</td>
+</tr>
+<tr>
+<td>新鲜度 &#x3D; <code>1/(0.01·Δt+1)</code></td>
+<td>按 <code>last_accessed</code> 排名做 <code>0.99^i</code> 指数衰减（论文是按游戏小时、0.995）</td>
+</tr>
+<tr>
+<td>新鲜度让「越近的记忆分越高」</td>
+<td>升序排 + 按位置赋权，实际<strong>最旧的拿最高分</strong>（方向反了，但权重仅 0.5，影响有限）</td>
+</tr>
+<tr>
+<td>一条记忆 4 字段</td>
+<td><code>ConceptNode</code>：SPO 三元组 + 三个时间戳 + poignancy + keywords + 类型&#x2F;depth&#x2F;filling</td>
+</tr>
+<tr>
+<td>Recall Top100 → Rerank Top10</td>
+<td><code>new_retrieve(n_count=30)</code>，对话场景 15&#x2F;25&#x2F;50；无固定漏斗</td>
+</tr>
+<tr>
+<td><code>act()</code> 广播 &#x2F; <code>env.update()</code> 同步</td>
+<td>无此 API；事件写在 maze 瓦片上，邻居靠 <code>perceive()</code> 拉取</td>
+</tr>
+<tr>
+<td>认知链：感知→规划→行动→广播</td>
+<td><code>perceive → retrieve → plan → reflect → execute</code></td>
+</tr>
+<tr>
+<td>两个 Agent 跨步轮流发消息对话</td>
+<td>发起方在<strong>一个回合内</strong>用 <code>agent_chat_v2</code> 一次性生成整场（每句仍扎根各自记忆），再写进双方</td>
+</tr>
+<tr>
+<td>串行顺序无影响 &#x2F; 靠前者先动后者看到新位置</td>
+<td>位置与顺序无关；但<strong>谁先开口由 <code>self.personas</code> 迭代顺序决定</strong>（先手方代生成对话并写入双方）</td>
+</tr>
+</tbody></table>
+<p>如果你要在斯坦福小镇基础上做二次开发，几条<strong>基于真实源码</strong>的建议：</p>
+<ol>
+<li>**想调记忆行为，先调 <code>retrieve.py</code> 的 <code>gw</code> 和 <code>scratch.py</code> 的三个 <code>_w</code>**，而不是去「把累乘改成加权和」——它本来就是加权和。</li>
+<li><strong>长期人设漂移</strong>的真正抓手是 <code>reflect.py</code>（反思把零散观察提炼成高 <code>poignancy</code>、低衰减影响的 thought 节点），以及 <code>poignancy</code> 的打分 prompt，而不是新鲜度公式。</li>
+<li><strong>新鲜度那段排序方向是反的</strong>（最旧的拿最高分，见第三节「深挖」一节的实证）。如果你的场景很看重「最近发生」，按那一节给的一行改法反转一次即可——别默认它一定对。</li>
+<li><strong>跨 Agent 交互延迟一个 step</strong>，是前后端文件往返带来的，不是 bug，但做实时性要求高的场景时要心里有数。</li>
+</ol>
+<hr>
+<p>一句话总结：斯坦福小镇真正值得抄的，是 <code>perceive → retrieve → plan → reflect → execute</code> 这条认知链，和「记忆 &#x3D; (S,P,O) + description + poignancy + embedding，检索 &#x3D; 加权和打分」这套设计。至于网上那些「累乘塌陷」「广播时序」，看一眼源码就散了。</p>
+<blockquote>
+<p>参考：官方仓库 <a href="https://github.com/joonspk-research/generative_agents"><code>joonspk-research/generative_agents</code></a>；关键文件 <code>reverie/backend_server/persona/cognitive_modules/&#123;retrieve,perceive,plan,reflect,converse&#125;.py</code>、<code>persona/persona.py</code>、<code>persona/memory_structures/&#123;associative_memory,scratch&#125;.py</code>、<code>persona/prompt_template/&#123;run_gpt_prompt,gpt_structure&#125;.py</code> 及 <code>prompt_template/&#123;v1,v2,v3_ChatGPT&#125;/*.txt</code>、<code>reverie/backend_server/reverie.py</code>；作者 2024 年重写版 <a href="https://github.com/joonspk-research/genagents"><code>StanfordHCI/genagents</code></a>；论文 <em>Generative Agents: Interactive Simulacra of Human Behavior</em>（Park et al., UIST 2023, arXiv:2304.03442）。</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr0i0zbu000hrth66qc970ya" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">家里突然断网？光猫 + 路由的分步重启排查手册</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI-Agent/" style="font-size: 10px;">AI Agent</a> <a href="/tags/Generative-Agents/" style="font-size: 10px;">Generative Agents</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E5%85%89%E7%8C%AB/" style="font-size: 10px;">光猫</a> <a href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" style="font-size: 10px;">多智能体</a> <a href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" style="font-size: 10px;">家庭局域网</a> <a href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" style="font-size: 10px;">斯坦福小镇</a> <a href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" style="font-size: 10px;">源码阅读</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" style="font-size: 10px;">网络故障</a> <a href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" style="font-size: 10px;">记忆机制</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 10px;">路由器</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/">家里突然断网？光猫 + 路由的分步重启排查手册</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/">Xray Reality 突然连不上？一次 connection reset by peer 的完整排查</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+          </li>
+        
+          <li>
+            <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2026 igoingdown<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

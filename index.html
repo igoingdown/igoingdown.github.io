@@ -64,6 +64,54 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-斯坦福小镇源码精读-记忆检索与执行时序" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
+  <time datetime="2026-06-30T10:10:30.682Z" itemprop="datePublished">2026-06-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 <a href="https://github.com/joonspk-research/generative_agents"><code>joonspk-research/generative_agents</code></a> 翻一遍，再对一遍 UIST’23 的原论文，就会发现<strong>流传最广的两个结论几乎都是错的</strong>：</p>
+<ol>
+<li>「记忆检索是新鲜度 × 重要度 × 相关性的<strong>三重累乘</strong>，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是<strong>加权求和</strong>；</li>
+<li>「行为靠 <code>act()</code> 广播、视图靠 <code>env.update()</code> 同步」——官方源码里<strong>压根没有 <code>broadcast()</code> &#x2F; <code>env.update()</code> 这套 API</strong>。</li>
+</ol>
+<p>这篇不堆概念，直接贴官方源码逐行核对，把记忆流、检索打分、以及「Agent 之间到底怎么互相感知」三件事讲清楚。所有代码片段都来自官方仓库 <code>reverie/backend_server/</code> 目录，文末附确切文件路径。</p>
+        
+          <p class="article-more-link">
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr0i0zbu000hrth66qc970ya" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-home-lan-outage-restart-断网重启排查" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" class="article-date">
@@ -96,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmqz5o2u60003tnh62ae71ke7" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmr0i0zbs000brth6ffpr0us1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li></ul>
@@ -140,7 +188,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" data-id="cmqz5o2u80007tnh62wq54lhl" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" data-id="cmr0i0zbt000frth62p21fq40" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li></ul>
@@ -183,7 +231,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmqz5o2u00000tnh653jldx59" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmr0i0zbi0000rth65yzff9i6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/g/" rel="tag">g++</a></li></ul>
@@ -226,7 +274,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" data-id="cmqz5o2u40001tnh6bbh51jht" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" data-id="cmr0i0zbq0007rth6629lcqzk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li></ul>
@@ -269,7 +317,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmqz5o2u70004tnh64rel010f" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmr0i0zbr0008rth68ivvde6m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
@@ -312,7 +360,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" data-id="cmqz5o2u70005tnh6e9vm0dos" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" data-id="cmr0i0zbr000arth64drm3ius" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
@@ -355,7 +403,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmqz5o2u90008tnh630vuhgmq" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmr0i0zbs000crth6areu2rc9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
@@ -398,7 +446,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmqz5o2u9000atnh6bgrcaiuc" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmr0i0zbt000erth64cawe5p4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
@@ -423,7 +471,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/g/" rel="tag">g++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vector/" rel="tag">vector</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
     </div>
   </div>
 
@@ -433,7 +481,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E5%85%89%E7%8C%AB/" style="font-size: 10px;">光猫</a> <a href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" style="font-size: 10px;">家庭局域网</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" style="font-size: 10px;">网络故障</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 10px;">路由器</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
+      <a href="/tags/AI-Agent/" style="font-size: 10px;">AI Agent</a> <a href="/tags/Generative-Agents/" style="font-size: 10px;">Generative Agents</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/c/" style="font-size: 16.67px;">c</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/g/" style="font-size: 10px;">g++</a> <a href="/tags/gcc/" style="font-size: 13.33px;">gcc</a> <a href="/tags/gdb/" style="font-size: 16.67px;">gdb</a> <a href="/tags/gfw/" style="font-size: 10px;">gfw</a> <a href="/tags/interview/" style="font-size: 10px;">interview</a> <a href="/tags/reality/" style="font-size: 10px;">reality</a> <a href="/tags/tls/" style="font-size: 10px;">tls</a> <a href="/tags/vector/" style="font-size: 13.33px;">vector</a> <a href="/tags/vpn/" style="font-size: 10px;">vpn</a> <a href="/tags/xray/" style="font-size: 10px;">xray</a> <a href="/tags/%E5%85%89%E7%8C%AB/" style="font-size: 10px;">光猫</a> <a href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" style="font-size: 10px;">多智能体</a> <a href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" style="font-size: 10px;">家庭局域网</a> <a href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" style="font-size: 10px;">斯坦福小镇</a> <a href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" style="font-size: 10px;">源码阅读</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" style="font-size: 10px;">网络排查</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" style="font-size: 10px;">网络故障</a> <a href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" style="font-size: 10px;">记忆机制</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 10px;">路由器</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E9%85%B7%E5%A3%B3/" style="font-size: 10px;">酷壳</a>
     </div>
   </div>
 
@@ -455,6 +503,10 @@
       <ul>
         
           <li>
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」</a>
+          </li>
+        
+          <li>
             <a href="/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/">家里突然断网？光猫 + 路由的分步重启排查手册</a>
           </li>
         
@@ -468,10 +520,6 @@
         
           <li>
             <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
-          </li>
-        
-          <li>
-            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
           </li>
         
       </ul>
