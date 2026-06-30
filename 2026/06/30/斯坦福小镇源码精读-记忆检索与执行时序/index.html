@@ -5,17 +5,17 @@
   
 
   
-  <title>斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」 | igoingdown</title>
+  <title>斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制 | igoingdown</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 joonspk-research&#x2F;generative_agents 翻一遍，再对一遍 UIST’23 的原论文，就会发现流传最广的两个结论几乎都是错的：  「记忆检索是新鲜度 × 重要度 × 相关性的三重累乘，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是加权">
+  <meta name="description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」。这篇不堆概念，直接对照官方仓库 joonspk-research&#x2F;generative_agents 的 main 分支和 UIST’23 原论文，逐行把记忆流、检索打分、Agent 交互、反思与规划讲清楚——每个点都配真实代码 + 一个手算 &#x2F; 场景示例。 顺带澄清两个容易被讲错、或被一些二手 &amp;#x">
 <meta property="og:type" content="article">
-<meta property="og:title" content="斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」">
+<meta property="og:title" content="斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制">
 <meta property="og:url" content="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/index.html">
 <meta property="og:site_name" content="igoingdown">
-<meta property="og:description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 joonspk-research&#x2F;generative_agents 翻一遍，再对一遍 UIST’23 的原论文，就会发现流传最广的两个结论几乎都是错的：  「记忆检索是新鲜度 × 重要度 × 相关性的三重累乘，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是加权">
+<meta property="og:description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」。这篇不堆概念，直接对照官方仓库 joonspk-research&#x2F;generative_agents 的 main 分支和 UIST’23 原论文，逐行把记忆流、检索打分、Agent 交互、反思与规划讲清楚——每个点都配真实代码 + 一个手算 &#x2F; 场景示例。 顺带澄清两个容易被讲错、或被一些二手 &amp;#x">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-06-30T10:10:30.682Z">
-<meta property="article:modified_time" content="2026-06-30T10:10:30.682Z">
+<meta property="article:published_time" content="2026-06-30T11:05:03.792Z">
+<meta property="article:modified_time" content="2026-06-30T11:05:03.792Z">
 <meta property="article:author" content="igoingdown">
 <meta property="article:tag" content="斯坦福小镇">
 <meta property="article:tag" content="Generative Agents">
@@ -76,7 +76,7 @@
         <section id="main"><article id="post-斯坦福小镇源码精读-记忆检索与执行时序" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
-  <time datetime="2026-06-30T10:10:30.682Z" itemprop="datePublished">2026-06-30</time>
+  <time datetime="2026-06-30T11:05:03.792Z" itemprop="datePublished">2026-06-30</time>
 </a>
     
   </div>
@@ -87,7 +87,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」
+      斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制
     </h1>
   
 
@@ -95,16 +95,17 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」「核心机制揭秘」。但只要你真的把官方仓库 <a href="https://github.com/joonspk-research/generative_agents"><code>joonspk-research/generative_agents</code></a> 翻一遍，再对一遍 UIST’23 的原论文，就会发现<strong>流传最广的两个结论几乎都是错的</strong>：</p>
+        <p>斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」。这篇不堆概念，直接对照官方仓库 <a href="https://github.com/joonspk-research/generative_agents"><code>joonspk-research/generative_agents</code></a> 的 <code>main</code> 分支和 UIST’23 原论文，逐行把<strong>记忆流、检索打分、Agent 交互、反思与规划</strong>讲清楚——每个点都配真实代码 + 一个手算 &#x2F; 场景示例。</p>
+<p>顺带澄清两个容易被讲错、或被一些二手 &#x2F; AI 生成资料带偏的点：</p>
 <ol>
-<li>「记忆检索是新鲜度 × 重要度 × 相关性的<strong>三重累乘</strong>，任意一项趋近 0 整条记忆就塌陷」——官方根本不是相乘，是<strong>加权求和</strong>；</li>
-<li>「行为靠 <code>act()</code> 广播、视图靠 <code>env.update()</code> 同步」——官方源码里<strong>压根没有 <code>broadcast()</code> &#x2F; <code>env.update()</code> 这套 API</strong>。</li>
+<li><strong>检索打分是加权求和，不是「新鲜度 × 重要度 × 相关性」的三重累乘</strong>——所以「任一项趋近 0 就整条塌陷」的说法不成立（那个乘法根本不存在）。这种「×」写法在野外确有流传（如第三方 issue <a href="https://github.com/stratalab/strata-core/issues/1637">stratalab&#x2F;strata-core#1637</a>），但并非主流。</li>
+<li><strong>Agent 之间没有「广播」API</strong>：官方不是靠 <code>broadcast()</code> &#x2F; <code>env.update()</code> 推送，而是把行为写在共享地图上、邻居自己来读（拉取式感知）。需要诚实说明的是，<code>env.broadcast()</code> &#x2F; <code>env.update()</code> 这套<strong>具体提法，我没能在官方或权威资料里找到出处</strong>，更像个别复刻 &#x2F; 资料的说法——所以下文重点是把<strong>真实机制</strong>讲清楚，而不是去纠某个「全网误区」。</li>
 </ol>
-<p>这篇不堆概念，直接贴官方源码逐行核对，把记忆流、检索打分、以及「Agent 之间到底怎么互相感知」三件事讲清楚。所有代码片段都来自官方仓库 <code>reverie/backend_server/</code> 目录，文末附确切文件路径。</p>
+<p>所有代码片段都来自官方 <code>reverie/backend_server/</code> 目录，文末附确切文件路径。</p>
 <span id="more"></span>
 
 <blockquote>
-<p>说明：本文以官方源码 <code>main</code> 分支为准，并与原论文 <em>Generative Agents: Interactive Simulacra of Human Behavior</em>（Park et al., UIST 2023）交叉验证。凡是和「网传版本」冲突的地方，以源码为准。</p>
+<p>说明：本文以官方源码 <code>main</code> 分支为准，并与原论文 <em>Generative Agents: Interactive Simulacra of Human Behavior</em>（Park et al., UIST 2023）交叉验证。凡是和二手说法冲突的地方，以源码为准。</p>
 </blockquote>
 <h2 id="开篇-·-先建立整体心智模型：一个-Agent-怎么「活」一天"><a href="#开篇-·-先建立整体心智模型：一个-Agent-怎么「活」一天" class="headerlink" title="开篇 · 先建立整体心智模型：一个 Agent 怎么「活」一天"></a>开篇 · 先建立整体心智模型：一个 Agent 怎么「活」一天</h2><p>第一次接触斯坦福小镇，先别急着钻代码。用一个比喻把骨架搭好，后面所有源码都是往这个骨架上挂的。</p>
 <p><strong>它本质是个「回合制模拟游戏」</strong>——像文字版《模拟人生》：一张地图、几个小人（Agent）、一个时钟。时钟一格一格往前跳，每跳一格，每个小人轮流「想一想」该干嘛、往哪走，然后画面刷新。开跑前先记住这几件事：</p>
@@ -119,8 +120,8 @@
 <h2 id="一、先把坐标系建对：真实的架构长什么样"><a href="#一、先把坐标系建对：真实的架构长什么样" class="headerlink" title="一、先把坐标系建对：真实的架构长什么样"></a>一、先把坐标系建对：真实的架构长什么样</h2><p>很多解读上来就讲「记忆流」，但没先讲清楚代码是怎么组织的，于是后面越讲越偏。先看真实结构。</p>
 <p>整个项目分两半：</p>
 <ul>
-<li>**后端 <code>reverie/backend_server/</code>**：Python，跑 Agent 的「大脑」（认知循环），不负责画面。</li>
-<li>**前端 <code>environment/frontend_server/</code>**：Django + Phaser，负责地图渲染和角色移动。</li>
+<li><strong>后端</strong>（<code>reverie/backend_server/</code>）：Python，跑 Agent 的「大脑」（认知循环），不负责画面。</li>
+<li><strong>前端</strong>（<code>environment/frontend_server/</code>）：Django + Phaser，负责地图渲染和角色移动。</li>
 </ul>
 <p>两边<strong>不是函数调用，而是靠文件交换</strong>：后端读前端写出的 <code>environment/&#123;step&#125;.json</code>（每个 Agent 当前坐标），算完后写出 <code>movement/&#123;step&#125;.json</code>（每个 Agent 下一步去哪、动作描述、对话）。这个细节后面讲「广播」时是关键。</p>
 <p>单个 Agent 的「大脑」是 <code>Persona</code> 类，它的认知主循环是 <code>move()</code>，顺序写得明明白白（<code>persona/persona.py</code>）：</p>
@@ -160,8 +161,8 @@
 
 <p>几个容易踩的点：</p>
 <ul>
-<li>**不是单一 <code>content</code>，而是 <code>(subject, predicate, object)</code> 三元组 + 一句自然语言 <code>description</code>**。三元组是给关键词索引用的，<code>description</code> 才是给 embedding 和 prompt 用的。</li>
-<li>**「重要度」官方叫 <code>poignancy</code>**，由 LLM 打 1–10 分（<code>perceive.py</code> 里的 <code>generate_poig_score</code>），不叫 importance。</li>
+<li><strong>不是只有一个 <code>content</code> 字段</strong>：一条记忆是 <code>(subject, predicate, object)</code> 三元组 + 一句自然语言 <code>description</code>。三元组给关键词索引用，<code>description</code> 才给 embedding 和 prompt 用。</li>
+<li><strong>「重要度」官方叫 <code>poignancy</code> 而非 importance</strong>，由 LLM 打 1–10 分（<code>perceive.py</code> 里的 <code>generate_poig_score</code>）。</li>
 <li><strong>时间有三个</strong>：<code>created</code>、<code>expiration</code>、<code>last_accessed</code>。新鲜度用的是 <code>last_accessed</code>，而且检索命中后会被刷新——这点后面打分要用到。</li>
 <li><strong>embedding 不直接挂在节点上</strong>，节点只存 <code>embedding_key</code>，真正的向量放在 <code>AssociativeMemory.embeddings</code> 这个大字典里（原始发布版用 OpenAI <code>text-embedding-ada-002</code>，1536 维）。这样同一句话的向量可以复用。</li>
 </ul>
@@ -251,7 +252,7 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">node（按 last_accessed 排序）       原始 recency    归一化</span><br><span class="line">OLDEST_3monthsAgo（3个月前）          0.99000        1.000   ← 最高</span><br><span class="line">old                                   0.98010        0.746</span><br><span class="line">mid                                   0.97030        0.495</span><br><span class="line">recent                                0.96060        0.246</span><br><span class="line">JUST_ACCESSED_now（1分钟前）          0.95099        0.000   ← 最低</span><br></pre></td></tr></table></figure>
 
 <p>这和论文意图正好相反（论文：「最近访问的记忆得分更高，按距上次访问的游戏小时数做指数衰减」）。更微妙的是，检索命中后会<strong>刷新</strong> <code>last_accessed</code>（上面那段 <code>n.last_accessed = curr_time</code>），于是你刚捞出来的记忆会被推到列表末尾 → 下次反而拿到<strong>最低</strong>的新鲜度，等于反了两层。</p>
-<p>我把整个 <code>retrieve.py</code> grep 了一遍：<strong>唯一</strong>的 <code>reverse=True</code> 在 <code>top_highest_x_values</code> 里（给<strong>最终分数</strong>降序排、挑 Top‑N 用），节点排序这条链路里**没有任何 <code>reversed()</code>**。所以二手资料里那句「原版代码会 reverse 一下修正」，对照真实 <code>main</code> 分支并不成立。</p>
+<p>我把整个 <code>retrieve.py</code> grep 了一遍：<strong>唯一</strong>的 <code>reverse=True</code> 在 <code>top_highest_x_values</code> 里（给<strong>最终分数</strong>降序排、挑 Top‑N 用）。<strong>而节点排序这条链路里，根本没有 <code>reversed()</code> 这回事</strong>——所以二手资料里那句「原版代码会 reverse 一下修正」，对照真实 <code>main</code> 分支并不成立。</p>
 <p>那这算 bug 吗？<code>decay ** i</code> 这个写法只有在「<code>i=1</code> 对应最近的节点」时才说得通，所以意图应该是「最近的拿最高权重」，和实现正好差了一次反转——更像疏漏，不像设计。但<strong>实际影响有限</strong>，因为前面算过：新鲜度有效权重只有 0.5，而相关性 3、重要度 2；归一化后新鲜度对总分的全部贡献至多 0.5，排序本就由相关性 + poignancy 主导。<strong>模拟跑起来依旧合理，不是因为新鲜度算对了，而是因为它几乎不影响大局。</strong></p>
 <p>接着前面那张 M1–M4 表看「影响到底有多大」：把它们的新鲜度换成官方代码的真实算法（最旧的 M2 反而拿最高、最新的 M3 拿最低），相关性、重要度不变，再算一遍加权和——排名从 <code>M1 &gt; M4 &gt; M2 &gt; M3</code> 变成 <code>M1 &gt; M2 &gt; M4 &gt; M3</code>：<strong>只有 M2、M4 对调，冠军和垫底纹丝不动，最终入选的还是那 3 条。</strong> 方向虽然反了，但新鲜度权重只有 0.5，撼不动由相关性(3)+重要度(2)定下的大局——这就是”真有瑕疵、却基本无害”的实证。</p>
 <p>如果你要在此基础上二次开发、且确实在意「越近越优先」，一行就能修——在<strong>且仅在一处</strong>反转：<code>sorted(..., reverse=True)</code>、或 <code>enumerate(reversed(nodes))</code>、或把 <code>recency_vals</code> 倒着生成。只能改一处，改两处会互相抵消又反回去。</p>
@@ -260,7 +261,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># genagents/modules/memory_stream.py —— 新版 extract_recency</span></span><br><span class="line">max_timestep = <span class="built_in">max</span>(node.last_retrieved <span class="keyword">for</span> node <span class="keyword">in</span> seq_nodes)</span><br><span class="line">recency_decay = <span class="number">0.99</span></span><br><span class="line"><span class="keyword">for</span> node <span class="keyword">in</span> seq_nodes:</span><br><span class="line">    recency_out[node.node_id] = recency_decay ** (max_timestep - node.last_retrieved)</span><br><span class="line"><span class="comment"># 最近检索的节点 last_retrieved == max_timestep → 0.99^0 = 1.0（最高），方向终于对了</span></span><br></pre></td></tr></table></figure>
 
 <p>GPTeam、AI Town、MetaGPT 等独立复刻也都改用「真实时间差」算新鲜度，结构上绕开了这个坑——但同样，<strong>没有任何一处注释或 commit 说明原版是反的</strong>。所以这更像一个「存在、被下游不断复制、被作者自己默默改对，却从未被公开指认」的实现细节。</p>
-<h2 id="四、Agent-之间怎么互相感知、怎么对话？没有「广播」这回事"><a href="#四、Agent-之间怎么互相感知、怎么对话？没有「广播」这回事" class="headerlink" title="四、Agent 之间怎么互相感知、怎么对话？没有「广播」这回事"></a>四、Agent 之间怎么互相感知、怎么对话？没有「广播」这回事</h2><p>网传版本里有一套 <code>env.broadcast()</code> 往 3×3 网格广播、<code>env.update()</code> 只做视图同步的说法。官方源码里<strong>这两个方法都不存在</strong>。真实机制是这样的：</p>
+<h2 id="四、Agent-之间怎么互相感知、怎么对话？没有「广播」这回事"><a href="#四、Agent-之间怎么互相感知、怎么对话？没有「广播」这回事" class="headerlink" title="四、Agent 之间怎么互相感知、怎么对话？没有「广播」这回事"></a>四、Agent 之间怎么互相感知、怎么对话？没有「广播」这回事</h2><p>有些二手解读（包括一些 AI 生成的材料）会用 <code>env.broadcast()</code> 往网格广播、<code>env.update()</code> 只同步视图这类框架来描述 Agent 交互——但官方源码里<strong>没有这套 API</strong>（我也没在官方或权威资料里找到它的确切出处）。官方真实机制是这样的：</p>
 <h3 id="1）事件写在地图瓦片（maze-tile）上"><a href="#1）事件写在地图瓦片（maze-tile）上" class="headerlink" title="1）事件写在地图瓦片（maze tile）上"></a>1）事件写在地图瓦片（maze tile）上</h3><p>后端主循环 <code>start_server()</code> 每个 step 先把所有 Agent 同步到前端给的新坐标，并<strong>把每个人「当前在干什么」作为事件写到它所在的瓦片上</strong>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># reverie.py  —— ReverieServer.start_server() 主循环（节选）</span></span><br><span class="line"><span class="keyword">for</span> persona_name, persona <span class="keyword">in</span> <span class="variable language_">self</span>.personas.items():</span><br><span class="line">    new_tile = (new_env[persona_name][<span class="string">&quot;x&quot;</span>], new_env[persona_name][<span class="string">&quot;y&quot;</span>])</span><br><span class="line">    <span class="variable language_">self</span>.personas_tile[persona_name] = new_tile</span><br><span class="line">    <span class="comment"># 把旧瓦片上这个人的事件移除，再把它的当前事件写到新瓦片</span></span><br><span class="line">    <span class="variable language_">self</span>.maze.remove_subject_events_from_tile(persona.name, curr_tile)</span><br><span class="line">    <span class="variable language_">self</span>.maze.add_event_from_tile(</span><br><span class="line">        persona.scratch.get_curr_event_and_desc(), new_tile)</span><br></pre></td></tr></table></figure>
 
@@ -273,11 +274,11 @@
 <li><code>att_bandwidth = 3</code>：一次最多注意几件事；</li>
 <li><code>retention = 5</code>：最近 N 条内见过就不重复记。</li>
 </ul>
-<p><strong>这是一套「拉取式」的感知，不是「推送式」的广播。</strong> 网传那套 <code>broadcast</code> API，更像是 AI Town 等第三方复刻项目的设计，被安到了斯坦福原版头上——讽刺的是，网传版本一边说「别人的双广播是魔改」，一边自己用的也不是原版 API。</p>
+<p><strong>这是一套「拉取式」的感知，不是「推送式」的广播。</strong> 一些二手资料会用 <code>broadcast</code> 来描述这一步，但官方并没有这样的推送 API——理解成「事件留在地图上、邻居自己来读」更贴合源码。</p>
 <h3 id="3）前端只负责「把人画出来、把人挪过去」"><a href="#3）前端只负责「把人画出来、把人挪过去」" class="headerlink" title="3）前端只负责「把人画出来、把人挪过去」"></a>3）前端只负责「把人画出来、把人挪过去」</h3><p>后端算完，写出 <code>movement/&#123;step&#125;.json</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># reverie.py  —— start_server()，写给前端的结果</span></span><br><span class="line">movements[<span class="string">&quot;persona&quot;</span>][persona_name] = &#123;</span><br><span class="line">    <span class="string">&quot;movement&quot;</span>:    next_tile,                  <span class="comment"># 下一步去哪</span></span><br><span class="line">    <span class="string">&quot;pronunciatio&quot;</span>: pronunciatio,              <span class="comment"># 一个 emoji</span></span><br><span class="line">    <span class="string">&quot;description&quot;</span>:  description,                <span class="comment"># 文字描述</span></span><br><span class="line">    <span class="string">&quot;chat&quot;</span>:         persona.scratch.chat,      <span class="comment"># 对话内容（如果有）</span></span><br><span class="line">&#125;</span><br><span class="line">curr_move_file = <span class="string">f&quot;<span class="subst">&#123;sim_folder&#125;</span>/movement/<span class="subst">&#123;self.step&#125;</span>.json&quot;</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(curr_move_file, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> outfile:</span><br><span class="line">    outfile.write(json.dumps(movements, indent=<span class="number">2</span>))</span><br><span class="line"><span class="variable language_">self</span>.step += <span class="number">1</span></span><br><span class="line"><span class="variable language_">self</span>.curr_time += datetime.timedelta(seconds=<span class="variable language_">self</span>.sec_per_step)</span><br></pre></td></tr></table></figure>
 
-<p>前端读到后让角色走过去，走到了再把新坐标写回 <code>environment/&#123;step+1&#125;.json</code>，进入下一轮。<strong>前端确实只做渲染、不含任何 AI 逻辑</strong>——这一点网传版本说对了，只是它把这件事安在了一个不存在的 <code>env.update()</code> 上。</p>
+<p>前端读到后让角色走过去，走到了再把新坐标写回 <code>environment/&#123;step+1&#125;.json</code>，进入下一轮。<strong>前端确实只做渲染、不含任何 AI 逻辑</strong>——但这件事并不是通过某个 <code>env.update()</code> 完成的（官方没有这个方法），而就是上面这套文件往返。</p>
 <h3 id="4）对话：不是「轮流发消息」，是发起方一次性生成整场"><a href="#4）对话：不是「轮流发消息」，是发起方一次性生成整场" class="headerlink" title="4）对话：不是「轮流发消息」，是发起方一次性生成整场"></a>4）对话：不是「轮流发消息」，是发起方一次性生成整场</h3><p>上面讲的是「感知」。但两个 Agent 真要「说上话」，机制和绝大多数人想的都不一样——这也是连英文解读都讲不准的地方。</p>
 <p>当 A 在 <code>plan()</code> 阶段感知到 B，会先走一段<strong>对话决策</strong>（<code>plan.py</code>）：过一堆硬性闸门（没在睡、不是 23 点、双方都没在聊天、冷却期已过……），再调一次 LLM 问「该不该上去搭话」（<code>generate_decide_to_talk</code>，返回 yes&#x2F;no）。</p>
 <p>一旦决定搭话，<strong>整场对话由 A 在自己这一个回合里一次性生成完</strong>（<code>converse.py</code> 的 <code>agent_chat_v2</code>），最多 8 个来回：</p>
@@ -288,7 +289,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># plan.py —— _chat_react（节选）</span></span><br><span class="line">convo, duration_min = generate_convo(maze, init_persona, target_persona)   <span class="comment"># 整场对话</span></span><br><span class="line">convo_summary = generate_convo_summary(init_persona, convo)                <span class="comment"># 概括成一条记忆</span></span><br><span class="line"><span class="keyword">for</span> role, p <span class="keyword">in</span> [(<span class="string">&quot;init&quot;</span>, init_persona), (<span class="string">&quot;target&quot;</span>, target_persona)]:       <span class="comment"># ← 写进【两个人】</span></span><br><span class="line">    chatting_with        = 对方.name</span><br><span class="line">    chatting_with_buffer = &#123;对方.name: <span class="number">800</span>&#125;        <span class="comment"># 冷却值，防止马上再聊</span></span><br><span class="line">    _create_react(p, convo_summary, duration_min, ..., chatting_with, convo, ...)</span><br></pre></td></tr></table></figure>
 
 <p>于是等 B 在循环里轮到时，<code>_should_react</code> 第一行就因 <code>persona.scratch.chatting_with</code> 已被置上而直接返回 <code>False</code>——B 不再重新决策，直接执行这场已经生成好的对话。聊完那个 <code>chatting_with_buffer = 800</code> 会每步递减，冷却期内不会马上又凑上去，避免两人无限对话。</p>
-<h3 id="5）谁先开口，取决于循环顺序"><a href="#5）谁先开口，取决于循环顺序" class="headerlink" title="5）谁先开口，取决于循环顺序"></a>5）谁先开口，取决于循环顺序</h3><p>于是网传那句「列表顺序影响相遇」其实<strong>直觉没错，只是机制不是广播</strong>。准确地说要拆成两半：</p>
+<h3 id="5）谁先开口，取决于循环顺序"><a href="#5）谁先开口，取决于循环顺序" class="headerlink" title="5）谁先开口，取决于循环顺序"></a>5）谁先开口，取决于循环顺序</h3><p>有种说法是「列表顺序影响相遇」，其实<strong>直觉没错，只是机制不是广播</strong>。准确地说要拆成两半：</p>
 <ul>
 <li><strong>位置&#x2F;感知与顺序无关</strong>：<code>start_server()</code> 先用<strong>第一个循环</strong>把所有 Agent 都摆到本 step 的新瓦片上，再用<strong>第二个循环</strong>让每个人 <code>move()</code>。等任何一个人开始感知时，所有人的位置在本 step 内已经定死，谁先 <code>perceive</code> 都看到相同位置；而且这些位置来自<strong>前端上一 step 的结果</strong>，天然带一个 step 的延迟（来自前后端文件往返，不是「刻意设计的时序差」）。</li>
 <li><strong>但对话的发起强依赖顺序</strong>：第二个循环是<strong>串行</strong>调用 <code>move()</code> 的（<code>for persona_name, persona in self.personas.items()</code>）。<strong>谁先轮到、且通过 <code>generate_decide_to_talk</code> 判定，谁就成为发起方</strong>，在自己回合里把整场对话和 <code>chatting_with</code> 状态直接写进对方；对方轮到时只能执行这场已生成好的对话。所以 <code>self.personas</code> 的迭代顺序，确实决定了「谁主动开口」。</li>
@@ -366,11 +367,11 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># run_gpt_prompt.py：run_gpt_prompt_insight_and_guidance 的解析器</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">__func_clean_up</span>(<span class="params">gpt_response, prompt=<span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    ret = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> gpt_response.split(<span class="string">&quot;\n&quot;</span>):</span><br><span class="line">        row = i.split(<span class="string">&quot;. &quot;</span>)[-<span class="number">1</span>]</span><br><span class="line">        thought = row.split(<span class="string">&quot;(because of &quot;</span>)[<span class="number">0</span>].strip()        <span class="comment"># 前半 = 洞见</span></span><br><span class="line">        evi_raw = row.split(<span class="string">&quot;(because of &quot;</span>)[<span class="number">1</span>].split(<span class="string">&quot;)&quot;</span>)[<span class="number">0</span>]   <span class="comment"># 后半 = 证据编号</span></span><br><span class="line">        ret[thought] = [<span class="built_in">int</span>(x) <span class="keyword">for</span> x <span class="keyword">in</span> re.findall(<span class="string">r&#x27;\d+&#x27;</span>, evi_raw)]</span><br><span class="line">    <span class="keyword">return</span> ret</span><br><span class="line"><span class="comment"># 最多重试 5 次：拼输入 → 调用 → 校验 → 清洗，全失败返回兜底值</span></span><br><span class="line">output = safe_generate_response(prompt, gpt_param, <span class="number">5</span>, fail_safe, __func_validate, __func_clean_up)</span><br></pre></td></tr></table></figure>
 
 <p>看懂这段就看懂了整套系统的骨架：<strong>模板出题 → GPT 作答 → 解析器按约定格式抠结构、抠不出就重试</strong>。<code>reflect</code>、<code>plan</code>、对话生成——全是这一个模式的不同「填空题」而已。</p>
-<h2 id="六、对照表-落地建议"><a href="#六、对照表-落地建议" class="headerlink" title="六、对照表 &amp; 落地建议"></a>六、对照表 &amp; 落地建议</h2><p>把网传结论和官方源码并排放一下：</p>
+<h2 id="六、对照表-落地建议"><a href="#六、对照表-落地建议" class="headerlink" title="六、对照表 &amp; 落地建议"></a>六、对照表 &amp; 落地建议</h2><p>把一些容易混淆的说法和官方源码并排放一下：</p>
 <table>
 <thead>
 <tr>
-<th>网传说法</th>
+<th>常被讲错 &#x2F; 易混的说法</th>
 <th>官方源码 &#x2F; 论文实际</th>
 </tr>
 </thead>
@@ -421,7 +422,7 @@
 </tbody></table>
 <p>如果你要在斯坦福小镇基础上做二次开发，几条<strong>基于真实源码</strong>的建议：</p>
 <ol>
-<li>**想调记忆行为，先调 <code>retrieve.py</code> 的 <code>gw</code> 和 <code>scratch.py</code> 的三个 <code>_w</code>**，而不是去「把累乘改成加权和」——它本来就是加权和。</li>
+<li><strong>想调记忆行为，先去调 <code>retrieve.py</code> 的 <code>gw</code> 和 <code>scratch.py</code> 里那三个 <code>_w</code> 权重</strong>，而不是去「把累乘改成加权和」——它本来就是加权和。</li>
 <li><strong>长期人设漂移</strong>的真正抓手是 <code>reflect.py</code>（反思把零散观察提炼成高 <code>poignancy</code>、低衰减影响的 thought 节点），以及 <code>poignancy</code> 的打分 prompt，而不是新鲜度公式。</li>
 <li><strong>新鲜度那段排序方向是反的</strong>（最旧的拿最高分，见第三节「深挖」一节的实证）。如果你的场景很看重「最近发生」，按那一节给的一行改法反转一次即可——别默认它一定对。</li>
 <li><strong>跨 Agent 交互延迟一个 step</strong>，是前后端文件往返带来的，不是 bug，但做实时性要求高的场景时要心里有数。</li>
@@ -435,7 +436,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr0i0zbu000hrth66qc970ya" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr0jil86001lilh68gsbgkna" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li></ul>
@@ -500,7 +501,7 @@
       <ul>
         
           <li>
-            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇源码精读：记忆检索是「加权和」不是「累乘」，以及那个并不存在的「广播」</a>
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
           </li>
         
           <li>
@@ -512,11 +513,11 @@
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
           </li>
         
           <li>
-            <a href="/2026/06/24/gdb%E7%8E%A9%E8%80%8D/">gdb安装与使用</a>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
           </li>
         
       </ul>
