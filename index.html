@@ -66,8 +66,8 @@
   
     <article id="post-斯坦福小镇源码精读-记忆检索与执行时序" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
-  <time datetime="2026-06-30T11:22:34.090Z" itemprop="datePublished">2026-06-30</time>
+    <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
+  <time datetime="2026-07-01T02:37:35.555Z" itemprop="datePublished">2026-07-01</time>
 </a>
     
   </div>
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
+      <a class="article-title" href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
     </h1>
   
 
@@ -87,21 +87,16 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」。这篇不堆概念，直接对照官方仓库 <a href="https://github.com/joonspk-research/generative_agents"><code>joonspk-research/generative_agents</code></a> 的 <code>main</code> 分支和 UIST’23 原论文，逐行把<strong>记忆流、检索打分、Agent 交互、反思与规划</strong>讲清楚——每个点都配真实代码 + 一个手算 &#x2F; 场景示例。</p>
-<p>顺带澄清两个容易被讲错、或被一些二手 &#x2F; AI 生成资料带偏的点：</p>
-<ol>
-<li><strong>检索打分是加权求和，不是「新鲜度 × 重要度 × 相关性」的三重累乘</strong>——所以「任一项趋近 0 就整条塌陷」的说法不成立（那个乘法根本不存在）。这种「×」写法在野外确有流传（如第三方 issue <a href="https://github.com/stratalab/strata-core/issues/1637">stratalab&#x2F;strata-core#1637</a>），但并非主流。</li>
-<li><strong>Agent 之间没有「广播」API</strong>：官方不是靠 <code>broadcast()</code> &#x2F; <code>env.update()</code> 推送，而是把行为写在共享地图上、邻居自己来读（拉取式感知）。需要诚实说明的是，<code>env.broadcast()</code> &#x2F; <code>env.update()</code> 这套<strong>具体提法，我没能在官方或权威资料里找到出处</strong>，更像个别复刻 &#x2F; 资料的说法——所以下文重点是把<strong>真实机制</strong>讲清楚，而不是去纠某个「全网误区」。</li>
-</ol>
 <p>所有代码片段都来自官方 <code>reverie/backend_server/</code> 目录，文末附确切文件路径。</p>
         
           <p class="article-more-link">
-            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/#more">Read More</a>
+            <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr0k57h4000a1th60jdv759f" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr1gtuxd0005lph62sz3bbkz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li></ul>
@@ -145,7 +140,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmr0k57h100041th6glkwhdg0" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmr1gtuxe0008lph60qo7353z" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li></ul>
@@ -189,53 +184,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" data-id="cmr0k57h200051th6e9zcgu85" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" data-id="cmr1gtuxc0004lph66s231uhq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-c++入门" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/" class="article-date">
-  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。<br>为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白<br>自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，<br>以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。<br>反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解法之后，<br>才明白C++程序应该怎么写，怎么写更漂亮，怎么写能避开C++的坑。<br>还是顺利过了研究生入学的机试，也顺利找到了第一份实习。<br>这是第一篇，主要说一下在刷题过程中常用的一些技巧。</p>
-        
-          <p class="article-more-link">
-            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmr0k57gu00001th61rz10cbl" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
 
     </footer>
   </div>
@@ -275,10 +227,53 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmr0k57gy00011th66a435mta" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmr1gtux60000lph6dz975iw9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/g/" rel="tag">g++</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-c++入门" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读《c++ primer》，刷LeetCode，看coolshell就是我的c++自学之路。<br>为什么是说‘自学’呢？因为学校教的时候我在玩，学校不教了，我才明白<br>自己啥也不会！考完研，每天按照考研期间的作息，把《c++ primer》通读了好几遍，<br>以前不懂的东西，竟然也能静下心来思考清楚了，学习真是一件奇妙的事情。<br>反复看，做习题，尝试刷leetcode的easy题，一开始代码又长又臭，看了不少优美的解法之后，<br>才明白C++程序应该怎么写，怎么写更漂亮，怎么写能避开C++的坑。<br>还是顺利过了研究生入学的机试，也顺利找到了第一份实习。<br>这是第一篇，主要说一下在刷题过程中常用的一些技巧。</p>
+        
+          <p class="article-more-link">
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmr1gtux90001lph66n3kbr4t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
 
     </footer>
   </div>
@@ -318,53 +313,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" data-id="cmr0k57h000031th63xuxgkbi" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" data-id="cmr1gtuxc0003lph69uzl301v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-细读c++ primer" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" class="article-date">
-  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/">c++ primer细读</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!</p>
-        
-          <p class="article-more-link">
-            <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmr0k57h300071th61v71glww" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
 
     </footer>
   </div>
@@ -404,10 +356,53 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" data-id="cmr0k57h300081th6gixu7b35" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" data-id="cmr1gtuxe0007lph6102zgmck" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-细读c++ primer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/">c++ primer细读</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!</p>
+        
+          <p class="article-more-link">
+            <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmr1gtuxf000alph65xkfaue0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
 
     </footer>
   </div>
@@ -447,7 +442,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmr0k57h4000b1th6hp449s6s" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmr1gtuxp0027lph6cmr1gbzt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
@@ -491,7 +486,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
     </div>
   </div>
 
@@ -504,7 +499,7 @@
       <ul>
         
           <li>
-            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
+            <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
           </li>
         
           <li>
@@ -516,11 +511,11 @@
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
           </li>
         
       </ul>
