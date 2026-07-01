@@ -10,12 +10,12 @@
   <meta name="description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」。这篇不堆概念，直接对照官方仓库 joonspk-research&#x2F;generative_agents 的 main 分支和 UIST’23 原论文，逐行把记忆流、检索打分、Agent 交互、反思与规划讲清楚——每个点都配真实代码 + 一个手算 &#x2F; 场景示例。 所有代码片段都来自官方 reverie&#x2F;ba">
 <meta property="og:type" content="article">
 <meta property="og:title" content="斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制">
-<meta property="og:url" content="https://igoingdown.github.io/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/index.html">
+<meta property="og:url" content="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/index.html">
 <meta property="og:site_name" content="igoingdown">
 <meta property="og:description" content="斯坦福小镇（Generative Agents）火了以后，全网出现了大量「源码拆解」。这篇不堆概念，直接对照官方仓库 joonspk-research&#x2F;generative_agents 的 main 分支和 UIST’23 原论文，逐行把记忆流、检索打分、Agent 交互、反思与规划讲清楚——每个点都配真实代码 + 一个手算 &#x2F; 场景示例。 所有代码片段都来自官方 reverie&#x2F;ba">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-07-01T02:37:35.555Z">
-<meta property="article:modified_time" content="2026-07-01T02:37:35.557Z">
+<meta property="article:published_time" content="2026-06-30T10:23:00.000Z">
+<meta property="article:modified_time" content="2026-07-01T02:38:09.915Z">
 <meta property="article:author" content="igoingdown">
 <meta property="article:tag" content="斯坦福小镇">
 <meta property="article:tag" content="Generative Agents">
@@ -75,8 +75,8 @@
       <div class="outer">
         <section id="main"><article id="post-斯坦福小镇源码精读-记忆检索与执行时序" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
-  <time datetime="2026-07-01T02:37:35.555Z" itemprop="datePublished">2026-07-01</time>
+    <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
+  <time datetime="2026-06-30T10:23:00.000Z" itemprop="datePublished">2026-06-30</time>
 </a>
     
   </div>
@@ -439,7 +439,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr1gtuxd0005lph62sz3bbkz" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr1guld50004ehh6evtzgrik" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li></ul>
@@ -491,7 +491,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
     </div>
   </div>
 
@@ -504,7 +504,7 @@
       <ul>
         
           <li>
-            <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
           </li>
         
           <li>
@@ -516,11 +516,11 @@
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
           </li>
         
       </ul>

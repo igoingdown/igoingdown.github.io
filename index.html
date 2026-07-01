@@ -66,8 +66,8 @@
   
     <article id="post-斯坦福小镇源码精读-记忆检索与执行时序" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
-  <time datetime="2026-07-01T02:37:35.555Z" itemprop="datePublished">2026-07-01</time>
+    <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" class="article-date">
+  <time datetime="2026-06-30T10:23:00.000Z" itemprop="datePublished">2026-06-30</time>
 </a>
     
   </div>
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
+      <a class="article-title" href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
     </h1>
   
 
@@ -90,13 +90,13 @@
 <p>所有代码片段都来自官方 <code>reverie/backend_server/</code> 目录，文末附确切文件路径。</p>
         
           <p class="article-more-link">
-            <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/#more">Read More</a>
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr1gtuxd0005lph62sz3bbkz" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/" data-id="cmr1guld50004ehh6evtzgrik" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Generative-Agents/" rel="tag">Generative Agents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" rel="tag">多智能体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87/" rel="tag">斯坦福小镇</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%B0%E5%BF%86%E6%9C%BA%E5%88%B6/" rel="tag">记忆机制</a></li></ul>
@@ -140,7 +140,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmr1gtuxe0008lph60qo7353z" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/29/home-lan-outage-restart-%E6%96%AD%E7%BD%91%E9%87%8D%E5%90%AF%E6%8E%92%E6%9F%A5/" data-id="cmr1guld60005ehh6blft3e57" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%85%89%E7%8C%AB/" rel="tag">光猫</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AE%B6%E5%BA%AD%E5%B1%80%E5%9F%9F%E7%BD%91/" rel="tag">家庭局域网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" rel="tag">网络故障</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li></ul>
@@ -184,53 +184,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" data-id="cmr1gtuxc0004lph66s231uhq" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/29/xray-reality-connection-reset-%E6%8E%92%E6%9F%A5/" data-id="cmr1guld60007ehh6almz95fh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gfw/" rel="tag">gfw</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/reality/" rel="tag">reality</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tls/" rel="tag">tls</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vpn/" rel="tag">vpn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xray/" rel="tag">xray</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5/" rel="tag">网络排查</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-c++程序编译过程" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" class="article-date">
-  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一个c程序从源代码到可执行文件需要经过预处理、编译、汇编和链接四个过程，<br>一个程序员应该了解甚至深入理解上述步骤，这样才能写出性能更高的代码。<br>学习上述过程，最好的工具还是<code>docker</code>+<code>g++</code></p>
-        
-          <p class="article-more-link">
-            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmr1gtux60000lph6dz975iw9" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/g/" rel="tag">g++</a></li></ul>
 
     </footer>
   </div>
@@ -270,10 +227,53 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmr1gtux90001lph66n3kbr4t" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E5%85%A5%E9%97%A8/" data-id="cmr1gulcz0000ehh64etoaqyi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-c++程序编译过程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一个c程序从源代码到可执行文件需要经过预处理、编译、汇编和链接四个过程，<br>一个程序员应该了解甚至深入理解上述步骤，这样才能写出性能更高的代码。<br>学习上述过程，最好的工具还是<code>docker</code>+<code>g++</code></p>
+        
+          <p class="article-more-link">
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/" data-id="cmr1guld30001ehh6hlb4242c" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/g/" rel="tag">g++</a></li></ul>
 
     </footer>
   </div>
@@ -313,7 +313,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" data-id="cmr1gtuxc0003lph69uzl301v" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/gdb%E7%8E%A9%E8%80%8D/" data-id="cmr1guld50003ehh6cdg2hj2p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li></ul>
@@ -356,53 +356,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" data-id="cmr1gtuxe0007lph6102zgmck" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E6%9C%89%E8%B6%A3%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98/" data-id="cmr1guld70008ehh64pj07xdd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/interview/" rel="tag">interview</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-细读c++ primer" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" class="article-date">
-  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/">c++ primer细读</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!</p>
-        
-          <p class="article-more-link">
-            <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmr1gtuxf000alph65xkfaue0" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
 
     </footer>
   </div>
@@ -442,10 +399,53 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmr1gtuxp0027lph6cmr1gbzt" class="article-share-link">Share</a>
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E9%85%B7%E5%A3%B3%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB/" data-id="cmr1guld7000aehh657w46w0x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%85%B7%E5%A3%B3/" rel="tag">酷壳</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-细读c++ primer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" class="article-date">
+  <time datetime="2026-06-24T10:39:11.951Z" itemprop="datePublished">2026-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/">c++ primer细读</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>读《c++ primer》，是自学c++的第一步，很多人也是从这里起步的，从这里起步，确实是一个很好的起点!</p>
+        
+          <p class="article-more-link">
+            <a href="/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://igoingdown.github.io/2026/06/24/%E7%BB%86%E8%AF%BBc++%20primer/" data-id="cmr1guld8000behh6cjj4go8x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gcc/" rel="tag">gcc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vector/" rel="tag">vector</a></li></ul>
 
     </footer>
   </div>
@@ -486,7 +486,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
     </div>
   </div>
 
@@ -499,7 +499,7 @@
       <ul>
         
           <li>
-            <a href="/2026/07/01/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
+            <a href="/2026/06/30/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%B0%8F%E9%95%87%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB-%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F/">斯坦福小镇（Generative Agents）源码精读：记忆流、检索打分与 Agent 交互机制</a>
           </li>
         
           <li>
@@ -511,11 +511,11 @@
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
+            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
           </li>
         
           <li>
-            <a href="/2026/06/24/c++%E5%85%A5%E9%97%A8/">c++入门</a>
+            <a href="/2026/06/24/c++%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">使用g++逐步编译c文件</a>
           </li>
         
       </ul>
